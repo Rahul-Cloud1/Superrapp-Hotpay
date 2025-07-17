@@ -1,6 +1,7 @@
 
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
 import profileIcon from './assets/My Profile Icon.png';
@@ -191,7 +192,9 @@ const Profile = () => {
       `}</style>
       <div style={{width: '100%', minHeight: '100vh', position: 'relative'}}>
         <header style={styles.header}>
+        <Link to="/app">
           <img src={logo} alt="Logo" style={styles.logo} />
+        </Link>
           <SearchBar />
           <ViewCartButton />
           <ProfileSection />

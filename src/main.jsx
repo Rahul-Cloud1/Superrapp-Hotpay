@@ -12,8 +12,7 @@ import Support from './Support.jsx'
 import Approval from './Approval.jsx'
 import Invoice from './Invoice.jsx'
 import Miceform from './Miceform.jsx'
-
-
+import Products from './Products.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,6 +28,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/approval" element={<Approval />} />
         <Route path="/invoice" element={<Invoice />} />
         <Route path="/miceform" element={<Miceform />} />
+        <Route path="/products" element={<Products />} />
+       
         {/* Redirect root path to login */}
         
         

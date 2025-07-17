@@ -2,6 +2,7 @@
 import './Login.css'
 import logo from './assets/image 3.png'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function SignUp() {
   // State for form fields
@@ -142,19 +143,21 @@ function SignUp() {
         left: 0,
         zIndex: 10
       }}>
-        <img 
-          src={logo} 
-          alt="SuperApp Logo"
-          style={{
-            width: '206px',
-            height: '92px',
-            position: 'absolute',
-            top: '24px',
-            left: '59px',
-            transform: 'rotate(0deg)',
-            opacity: 1
-          }}
-        />
+        <Link to="/app">
+          <img 
+            src={logo} 
+            alt="SuperApp Logo"
+            style={{
+              width: '206px',
+              height: '92px',
+              position: 'absolute',
+              top: '24px',
+              left: '59px',
+              transform: 'rotate(0deg)',
+              opacity: 1
+            }}
+          />
+        </Link>
         <div className="header-content">
           <nav className="header-nav">
             <ul className="nav-links">

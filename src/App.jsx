@@ -1,62 +1,65 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import './App.css';
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom';
+import './App.css'
 
 // Asset Imports
-import logo from './assets/image 3.png';
-import stationeryImage from './assets/Frame 3.png';
-import eventImage from './assets/Rectangle 7.png';
-import vectorIcon from './assets/Vector.png';
-import profileIcon from './assets/My Profile Icon.png';
-import p1Image from './assets/P1.png';
-import p2Image from './assets/p2.png';
-import p3Image from './assets/p3.png';
-import p4Image from './assets/p4.png';
-import p5Image from './assets/p5.png';
-import p6Image from './assets/p6.png';
-import p7Image from './assets/p7.png';
-import p8Image from './assets/p8.png';
-import p9Image from './assets/p9.png';
-import p10Image from './assets/p10.png';
-import p11Image from './assets/p11.png';
-import p12Image from './assets/p12.png';
-import p13Image from './assets/p13.png';
-import p14Image from './assets/p14.png';
-import servicesImage from './assets/Services.png';
-import s1Image from './assets/s1.png';
-import s2Image from './assets/s2.png';
-import s3Image from './assets/s3.png';
-import s4Image from './assets/s4.png';
-import s5Image from './assets/s5.png';
-import s6Image from './assets/s6.png';
-import s7Image from './assets/s7.png';
-import s8Image from './assets/s8.png';
-import s9Image from './assets/s9.png';
-import s10Image from './assets/s10.png';
-import s11Image from './assets/s11.png';
-import s12Image from './assets/s12.png';
-import s13Image from './assets/s13.png';
-import s14Image from './assets/s14.png';
-import discoverImage from './assets/Discover.png';
-import tilephotoImage from './assets/tilephoto.jpg';
-import img23Image from './assets/img23.png';
+import logo from './assets/image 3.png'
+import { Link } from 'react-router-dom';
+import stationeryImage from './assets/Frame 3.png'
+import eventImage from './assets/Rectangle 7.png'
+import vectorIcon from './assets/Vector.png'
+import profileIcon from './assets/My Profile Icon.png'
+import p1Image from './assets/P1.png'
+import p2Image from './assets/p2.png'
+import p3Image from './assets/p3.png'
+import p4Image from './assets/p4.png'
+import p5Image from './assets/p5.png'
+import p6Image from './assets/p6.png'
+import p7Image from './assets/p7.png'
+import p8Image from './assets/p8.png'
+import p9Image from './assets/p9.png'
+import p10Image from './assets/p10.png'
+import p11Image from './assets/p11.png'
+import p12Image from './assets/p12.png'
+import p13Image from './assets/p13.png'
+import p14Image from './assets/p14.png'
+import servicesImage from './assets/Services.png'
+import s1Image from './assets/s1.png'
+import s2Image from './assets/s2.png'
+import s3Image from './assets/s3.png'
+import s4Image from './assets/s4.png'
+import s5Image from './assets/s5.png'
+import s6Image from './assets/s6.png'
+import s7Image from './assets/s7.png'
+import s8Image from './assets/s8.png'
+import s9Image from './assets/s9.png'
+import s10Image from './assets/s10.png'
+import s11Image from './assets/s11.png'
+import s12Image from './assets/s12.png'
+import s13Image from './assets/s13.png'
+import s14Image from './assets/s14.png'
+import discoverImage from './assets/Discover.png'
+import tilephotoImage from './assets/tilephoto.jpg'
+import img23Image from './assets/img23.png'
 
 /**
  * SuperApp - Clean E-commerce Interface
  * Professional layout with product tiles and service components
  */
 function App() {
+
   // Hide scrollbars and set up container
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    // Inject style to hide scrollbars
-    const style = document.createElement('style');
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    
+    const style = document.createElement('style')
     style.textContent = `
       body, html { overflow: hidden !important; margin: 0; padding: 0; }
       ::-webkit-scrollbar { display: none !important; }
-    `;
-    document.head.appendChild(style);
-    // ...existing code...
+    `
+    document.head.appendChild(style)
+    
     return () => {
       document.body.style.overflow = 'auto'
       document.documentElement.style.overflow = 'auto'
@@ -1174,10 +1177,11 @@ function App() {
     </div>
   )
 
+  const navigate = useNavigate();
   const ProductsLink = () => (
     <button 
       style={styles.productsLink}
-      onClick={() => console.log('Products link clicked')}
+      onClick={() => navigate('/products')}
     >
       <span>Products</span>
       <span>→</span>
@@ -1231,8 +1235,7 @@ function App() {
   )
 
   const P1 = () => (
-    <div style={styles.p1}>
-      {/* Content can be added here */}
+    <div style={styles.p1} onClick={() => navigate('/products?category=Office%20Stationery')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1276,8 +1279,7 @@ function App() {
   )
 
   const P2 = () => (
-    <div style={styles.p2}>
-      {/* Content can be added here */}
+    <div style={styles.p2} onClick={() => navigate('/products?category=Housekeeping%20Tools')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1321,8 +1323,7 @@ function App() {
   )
 
   const P3 = () => (
-    <div style={styles.p3}>
-      {/* Content can be added here */}
+    <div style={styles.p3} onClick={() => navigate('/products?category=Office%20Pantry')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1366,8 +1367,7 @@ function App() {
   )
 
   const P4 = () => (
-    <div style={styles.p4}>
-      {/* Content can be added here */}
+    <div style={styles.p4} onClick={() => navigate('/products?category=Disposables')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1411,8 +1411,7 @@ function App() {
   )
 
   const P5 = () => (
-    <div style={styles.p5}>
-      {/* Content can be added here */}
+    <div style={styles.p5} onClick={() => navigate('/products?category=Electronics')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1456,8 +1455,7 @@ function App() {
   )
 
   const P6 = () => (
-    <div style={styles.p6}>
-      {/* Content can be added here */}
+    <div style={styles.p6} onClick={() => navigate('/products?category=Laptop%20%26%20Luggage%20Bags')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1501,8 +1499,7 @@ function App() {
   )
 
   const P7 = () => (
-    <div style={styles.p7}>
-      {/* Content can be added here */}
+    <div style={styles.p7} onClick={() => navigate('/products?category=IT%20Equipment')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1546,8 +1543,7 @@ function App() {
   )
 
   const P8 = () => (
-    <div style={styles.p8}>
-      {/* Content can be added here */}
+    <div style={styles.p8} onClick={() => navigate('/products?category=Sports%20Equipment')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1591,8 +1587,7 @@ function App() {
   )
 
   const P9 = () => (
-    <div style={styles.p9}>
-      {/* Content can be added here */}
+    <div style={styles.p9} onClick={() => navigate('/products?category=Office%20Decor')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1636,8 +1631,7 @@ function App() {
   )
 
   const P10 = () => (
-    <div style={styles.p10}>
-      {/* Content can be added here */}
+    <div style={styles.p10} onClick={() => navigate('/products?category=Joining%20Kit')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1681,8 +1675,7 @@ function App() {
   )
 
   const P11 = () => (
-    <div style={styles.p11}>
-      {/* Content can be added here */}
+    <div style={styles.p11} onClick={() => navigate('/products?category=Candies%20%26%20Chocolates')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1726,8 +1719,7 @@ function App() {
   )
 
   const P12 = () => (
-    <div style={styles.p12}>
-      {/* Content can be added here */}
+    <div style={styles.p12} onClick={() => navigate('/products?category=Office%20Furniture')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1771,8 +1763,7 @@ function App() {
   )
 
   const P13 = () => (
-    <div style={styles.p13}>
-      {/* Content can be added here */}
+    <div style={styles.p13} onClick={() => navigate('/products?category=Gift%20Hampers')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -1816,8 +1807,7 @@ function App() {
   )
 
   const P14 = () => (
-    <div style={styles.p14}>
-      {/* Content can be added here */}
+    <div style={styles.p14} onClick={() => navigate('/products?category=Plastic%20%26%20Glassware')}>
       <div style={{
         width: '90.32018280029297px',
         height: '90.32018280029297px',
@@ -2577,7 +2567,9 @@ function App() {
     <div style={styles.container}>
       {/* Header */}
       <header style={styles.header}>
-        <img src={logo} alt="Logo" style={styles.logo} />
+        <Link to="/app">
+          <img src={logo} alt="Logo" style={styles.logo} />
+        </Link>
         <SearchBar />
         <ViewCartButton />
         <ProfileSection />

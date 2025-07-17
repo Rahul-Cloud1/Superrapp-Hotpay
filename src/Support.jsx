@@ -1,6 +1,7 @@
 
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
 import profileIcon from './assets/My Profile Icon.png';
@@ -200,7 +201,9 @@ const Support = () => {
       `}</style>
       <div style={{width: '1440px', height: '900px', position: 'relative', opacity: 1}}>
         <header style={styles.header}>
-          <img src={logo} alt="Logo" style={styles.logo} />
+          <Link to="/app">
+            <img src={logo} alt="Logo" style={styles.logo} />
+          </Link>
           <SearchBar />
           <ViewCartButton />
           <ProfileSection />

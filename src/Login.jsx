@@ -1,4 +1,5 @@
 import './Login.css';
+import { Link } from 'react-router-dom';
 import logo from './assets/image 3.png';
 import applink from './assets/applink.png';
 import { useEffect, useState } from 'react';
@@ -57,19 +58,21 @@ function Login() {
         left: 0,
         zIndex: 10
       }}>
-        <img 
-          src={logo} 
-          alt=""
-          style={{
-            width: '206px',
-            height: '92px',
-            position: 'absolute',
-            top: '24px',
-            left: '59px',
-            transform: 'rotate(0deg)',
-            opacity: 1
-          }}
-        />
+        <Link to="/app">
+          <img 
+            src={logo} 
+            alt=""
+            style={{
+              width: '206px',
+              height: '92px',
+              position: 'absolute',
+              top: '24px',
+              left: '59px',
+              transform: 'rotate(0deg)',
+              opacity: 1
+            }}
+          />
+        </Link>
         <div className="header-content">
           <div className="header-logo">
             
