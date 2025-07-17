@@ -1,59 +1,45 @@
-import './Login.css'
-import logo from './assets/image 3.png'
-import applink from './assets/applink.png'
-import { useEffect, useState } from 'react'
+import './Login.css';
+import logo from './assets/image 3.png';
+import applink from './assets/applink.png';
+import { useEffect, useState } from 'react';
 
+// Login page component
 function Login() {
-
   // State to control OTP section visibility
-  const [email, setEmail] = useState('')
-  const [showOTP, setShowOTP] = useState(false)
+  const [email, setEmail] = useState('');
+  const [showOTP, setShowOTP] = useState(false);
 
   // Hide scrollbars visually but allow scrolling
   useEffect(() => {
-    // Set body to allow scrolling
-    document.body.style.overflow = 'auto'
-    document.body.style.height = 'auto'
-    document.documentElement.style.overflow = 'auto'
-    document.documentElement.style.height = 'auto'
-    
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.height = 'auto';
     // Add CSS to hide scrollbars visually but keep functionality
-    const style = document.createElement('style')
+    const style = document.createElement('style');
     style.textContent = `
-      body, html { 
-        margin: 0; 
-        padding: 0;
-        height: auto !important;
-        min-height: 100vh;
-      }
-      ::-webkit-scrollbar { 
-        display: none !important; 
-      }
-      body {
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-      }
-    `
-    document.head.appendChild(style)
-    
+      body, html { margin: 0; padding: 0; height: auto !important; min-height: 100vh; }
+      ::-webkit-scrollbar { display: none !important; }
+      body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+    `;
+    document.head.appendChild(style);
     // Cleanup function
     return () => {
-      document.body.style.overflow = ''
-      document.body.style.height = ''
-      document.documentElement.style.overflow = ''
-      document.documentElement.style.height = ''
-      document.head.removeChild(style)
-    }
-  }, [])
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+      document.head.removeChild(style);
+    };
+  }, []);
 
+  // Main login container
   return (
     <div className="login-container" style={{
       width: '100vw',
       minWidth: '1400px',
       height: 'auto',
       minHeight: '100vh',
-      transform: 'rotate(0deg)',
-      opacity: 1,
       background: 'rgba(255, 255, 255, 1)',
       position: 'relative',
       overflow: 'visible'

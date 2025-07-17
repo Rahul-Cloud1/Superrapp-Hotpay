@@ -209,6 +209,30 @@ const Invoice
         <ViewCartButton />
         <ProfileSection />
       </header>
+      {/* Attractive Box between header and 1st frame near sidebar */}
+      <div style={{
+        position: 'absolute',
+        top: '128px',
+        left: '225px',
+        width: '100px',
+        height: '40px',
+        background: 'linear-gradient(135deg, #007BFF 0%, #00C6FF 100%)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 16px rgba(0,123,255,0.15)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontFamily: 'Poppins',
+        fontWeight: 600,
+        fontSize: '18px',
+        zIndex: 20,
+        border: '2px solid #fff',
+      }}>
+        <span style={{fontSize: '10px', fontWeight: 700, marginBottom: '4px'}}>Welcome!</span>
+        <span style={{fontSize: '10px', fontWeight: 400}}>View Invoices</span>
+      </div>
       {/* Sidebar navigation */}
       <aside style={{
         width: '210px',
@@ -227,8 +251,11 @@ const Invoice
         <nav style={{ position: 'relative', width: '100%', height: '100%' }}>
         {/* Profile icon and label */}
         <div style={{ position: 'absolute', top: 31, left: 23, display: 'flex', alignItems: 'center' }}>
-              <a href="/profile" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>My Profile</a>
-            </div>
+          <a href="/profile" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Profile">
+            <img src={profileicon} alt="Profile" style={{ width: 25, height: 25 }} />
+          </a>
+          <a href="/profile" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>My Profile</a>
+        </div>
 
             {/* Orders icon and label */}
             <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center' }}>
