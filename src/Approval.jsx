@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
@@ -185,6 +185,32 @@ function animateIcon(e) {
 }
 
 const Approval = () => {
+  // --- API integration 
+  
+  // const [approvals, setApprovals] = useState([]);
+  // useEffect(() => {
+  //   fetch('/api/approvals') //  API endpoint
+  //     .then(res => res.json())
+  //     .then(data => setApprovals(data));
+  // }, []);
+
+  // Example static data 
+  const approvals = [
+    {
+      id: '1324565',
+      requestedBy: 'Johndoe@apple.com',
+      orderDetails: ['Item A', 'Item B', 'Item C'],
+      amount: 800,
+      remarks: 'if any',
+    },
+    {
+      id: '1324566',
+      requestedBy: 'janedoe@apple.com',
+      orderDetails: ['Item X', 'Item Y'],
+      amount: 1200,
+      remarks: 'urgent',
+    },
+  ];
   return (
     <div style={styles.profileStyle}>
       {/* Hide scrollbar but allow scrolling */}
@@ -208,265 +234,269 @@ const Approval = () => {
           <ViewCartButton />
           <ProfileSection />
         </header>
-        {/* Frame 1 under header */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '135px',
-            left: '225px',
-            width: '1190px',
-            height: '369px',
-            borderRadius: '15px',
-            background: 'rgba(17, 114, 182, 0.15)',
-            opacity: 1,
-            transform: 'rotate(0deg)',
-            zIndex: 1,
-          }}
-        >
+        {/* Approval frames - dynamic stacking */}
+        {approvals.map((approvalData, idx) => (
           <div
+            key={approvalData.id}
             style={{
               position: 'absolute',
-              top: '20px',
-              left: '19px',
-              width: '291px',
-              height: '21px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '20px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
+              top: `${135 + idx * 390}px`, // 390px = 369px height + 21px gap
+              left: '225px',
+              width: '1190px',
+              height: '369px',
+              borderRadius: '15px',
+              background: 'rgba(17, 114, 182, 0.15)',
               opacity: 1,
               transform: 'rotate(0deg)',
+              zIndex: 1,
             }}
           >
-            Approval ID - 1324565
+            <div
+              style={{
+                position: 'absolute',
+                top: '20px',
+                left: '19px',
+                width: '291px',
+                height: '21px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '20px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              {`Approval ID - ${approvalData.id}`}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '54px',
+                left: '19px',
+                width: '291px',
+                height: '24px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              Requested by:
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '78px',
+                left: '19px',
+                width: '237px',
+                height: '23px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              {approvalData.requestedBy}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '112px',
+                left: '19px',
+                width: '291px',
+                height: '24px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              Order details:
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '136px',
+                left: '19px',
+                width: '237px',
+                height: '54px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              {approvalData.orderDetails.map((item, i) => (
+                <span key={i}>{`${i + 1}. ${item}`}<br /></span>
+              ))}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '200px',
+                left: '19px',
+                width: '291px',
+                height: '24px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              Amount requested:
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '224px',
+                left: '19px',
+                width: '237px',
+                height: '23px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              {`${approvalData.amount} credits`}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '259px',
+                left: '19px',
+                width: '291px',
+                height: '24px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              Remarks:
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: '283px',
+                left: '19px',
+                width: '237px',
+                height: '23px',
+                fontFamily: 'Poppins',
+                fontWeight: 500,
+                fontStyle: 'Medium',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: 0,
+                verticalAlign: 'middle',
+                color: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+              }}
+            >
+              {approvalData.remarks}
+            </div>
+            {/* Styled box for actions, visible and above aside */}
+            <button
+              style={{
+                position: 'absolute',
+                top: '270px',
+                left: '791px',
+                width: '160px',
+                height: '53px',
+                borderRadius: '8.92px',
+                background: 'linear-gradient(180deg, #007AFF 30%, #004999 100%)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontFamily: 'Poppins',
+                fontWeight: 600,
+                fontSize: '18px',
+                boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.3)',
+                zIndex: 2,
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Accept
+            </button>
+            <button
+              style={{
+                position: 'absolute',
+                top: '270px',
+                left: '967.52px',
+                width: '160px',
+                height: '53px',
+                borderRadius: '8.92px',
+                background: 'rgba(255, 255, 255, 1)',
+                opacity: 1,
+                transform: 'rotate(0deg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#007AFF',
+                fontFamily: 'Poppins',
+                fontWeight: 600,
+                fontSize: '18px',
+                boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.1)',
+                zIndex: 2,
+                border: '1px solid #007AFF',
+                cursor: 'pointer',
+              }}
+            >
+              Reject
+            </button>
           </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '54px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Requested by:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '78px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Johndoe@apple.com
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '112px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Order details:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '136px',
-              left: '19px',
-              width: '237px',
-              height: '54px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            1. Item A<br />2. Item B<br />3. Item C
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '200px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Amount requested:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '224px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            800 credits
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '259px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Remarks:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '283px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            if any
-          </div>
-          {/* Styled box for actions, visible and above aside */}
-          <button
-            style={{
-              position: 'absolute',
-              top: '270px',
-              left: '791px',
-              width: '160px',
-              height: '53px',
-              borderRadius: '8.92px',
-              background: 'linear-gradient(180deg, #007AFF 30%, #004999 100%)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontFamily: 'Poppins',
-              fontWeight: 600,
-              fontSize: '18px',
-              boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.3)',
-              zIndex: 2,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Accept
-          </button>
-          <button
-            style={{
-              position: 'absolute',
-              top: '270px',
-              left: '967.52px',
-              width: '160px',
-              height: '53px',
-              borderRadius: '8.92px',
-              background: 'rgba(255, 255, 255, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#007AFF',
-              fontFamily: 'Poppins',
-              fontWeight: 600,
-              fontSize: '18px',
-              boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.1)',
-              zIndex: 2,
-              border: '1px solid #007AFF',
-              cursor: 'pointer',
-            }}
-          >
-            Reject
-          </button>
-          
-        </div>
+        ))}
         <aside style={{
           width: '210px',
           height: '779px',
@@ -489,7 +519,6 @@ const Approval = () => {
               </a>
               <a href="/profile" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>My Profile</a>
             </div>
-
             {/* Orders icon and label */}
             <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/orders" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Orders">
@@ -497,7 +526,6 @@ const Approval = () => {
               </a>
               <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13, opacity: 1 }}>Orders</span>
             </div>
-
             {/* Wallet icon and label */}
             <div style={{ position: 'absolute', top: 163, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/wallet" style={{ width: 19.8, height: 18.75, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Wallet">
@@ -505,7 +533,6 @@ const Approval = () => {
               </a>
               <a href="/wallet" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>SuperWallet</a>
             </div>
-
             {/* Support icon and label */}
             <div style={{ position: 'absolute', top: 226, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/support" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Support">
@@ -513,7 +540,6 @@ const Approval = () => {
               </a>
               <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 14, opacity: 1 }}>Support</span>
             </div>
-
             {/* Approval icon and label */}
             <div style={{ position: 'absolute', top: 291, left: 26, display: 'flex', alignItems: 'center' }}>
               <a href="/approval" style={{ width: 18.75, height: 20.83, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Approval">
@@ -521,7 +547,6 @@ const Approval = () => {
               </a>
               <a href="/approval" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>Approvals</a>
             </div>
-
             {/* Invoice icon and label */}
             <div style={{ position: 'absolute', top: 351.83, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/invoice" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Invoice">
@@ -529,7 +554,6 @@ const Approval = () => {
               </a>
               <a href="/invoice" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13, opacity: 1, textDecoration: 'none' }}>Invoices</a>
             </div>
-
             {/* Logout icon and label */}
             <div style={{ position: 'absolute', top: 416.83, left: 26, display: 'flex', alignItems: 'center' }}>
               <a href="/login" style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Logout">
@@ -538,265 +562,6 @@ const Approval = () => {
               <a href="/login" style={{ color: 'red', fontFamily: 'Poppins', fontSize: 14, opacity: 1, textDecoration: 'none' }}>Log out</a>
             </div>
           </nav>
-
-        {/* Frame 2 (box 2) below the first box */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '395px',
-            left: '225px',
-            width: '1190px',
-            height: '369px',
-            borderRadius: '15px',
-            background: 'rgba(17, 114, 182, 0.15)',
-            opacity: 1,
-            transform: 'rotate(0deg)',
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '20px',
-              left: '19px',
-              width: '291px',
-              height: '21px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '20px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Approval ID - 1324565
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '54px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Requested by:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '78px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Johndoe@apple.com
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '112px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Order details:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '136px',
-              left: '19px',
-              width: '237px',
-              height: '54px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            1. Item A<br />2. Item B<br />3. Item C
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '200px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Amount requested:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '224px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            800 credits
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '259px',
-              left: '19px',
-              width: '291px',
-              height: '24px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            Remarks:
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '283px',
-              left: '19px',
-              width: '237px',
-              height: '23px',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'Medium',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-            }}
-          >
-            if any
-          </div>
-          {/* Styled box for actions, visible and above aside */}
-          <button
-            style={{
-              position: 'absolute',
-              top: '270px',
-              left: '791px',
-              width: '160px',
-              height: '53px',
-              borderRadius: '8.92px',
-              background: 'linear-gradient(180deg, #007AFF 30%, #004999 100%)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontFamily: 'Poppins',
-              fontWeight: 600,
-              fontSize: '18px',
-              boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.3)',
-              zIndex: 2,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Accept
-          </button>
-          <button
-            style={{
-              position: 'absolute',
-              top: '270px',
-              left: '967.52px',
-              width: '160px',
-              height: '53px',
-              borderRadius: '8.92px',
-              background: 'rgba(255, 255, 255, 1)',
-              opacity: 1,
-              transform: 'rotate(0deg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#007AFF',
-              fontFamily: 'Poppins',
-              fontWeight: 600,
-              fontSize: '18px',
-              boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.1)',
-              zIndex: 2,
-              border: '1px solid #007AFF',
-              cursor: 'pointer',
-            }}
-          >
-            Reject
-          </button>
-        </div>
         </aside>
         <main className="profile-scrollable" style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 120px)', overflow: 'auto'}}>
           {/* Orders content goes here */}

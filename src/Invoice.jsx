@@ -711,11 +711,7 @@ const Invoice
           {/* Frame 4 */}
           <div style={{ position: 'absolute', top: '609px', left: '225px', width: '1190px', height: '133px', background: 'rgba(17, 114, 182, 0.15)', borderRadius: '15px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', opacity: 1, transform: 'rotate(0deg)', display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0' }}>
             <span style={{
-              position: 'absolute',
-              top: '14px',
-              left: '26px',
-              width: '251px',
-              height: '21px',
+              position: 'absolute', top: '14px',left: '26px', width: '251px',      height: '21px',
               fontFamily: 'Poppins',
               fontWeight: 500,
               fontStyle: 'Medium',

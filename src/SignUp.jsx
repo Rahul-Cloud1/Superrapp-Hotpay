@@ -5,21 +5,72 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function SignUp() {
-  // State for form fields
+  // Form fields
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    companyLegalName: '',
+    employeeCount: '',
     city: '',
     state: '',
     pincode: '',
-    email: '',
-    password: '',
+    adminEmail: '',
+    billingAddress: '',
     adminName: '',
     adminContact: '',
     gstin: '',
-    adminEmail: '',
+    deliveryAddress: '',
     designation: '',
   });
+
+  // Loading and error state (optional)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  // Backend API endpoint 
+
+  const API_URL = 'http://10.10.2.109:5000/corporate';
+
+  // Form submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error('Signup failed');
+      }
+      setSuccess(true);
+      alert('Signup successful!');
+      
+      setFormData({
+        companyLegalName: '',
+        employeeCount: '',
+        city: '',
+        state: '',
+        pincode: '',
+        adminEmail: '',
+        billingAddress: '',
+        adminName: '',
+        adminContact: '',
+        gstin: '',
+        deliveryAddress: '',
+        designation: '',
+      });
+    } catch (err) {
+      setError(err.message || 'Signup failed');
+      alert('Signup failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -143,7 +194,7 @@ function SignUp() {
         left: 0,
         zIndex: 10
       }}>
-        <Link to="/app">
+        
           <img 
             src={logo} 
             alt="SuperApp Logo"
@@ -157,7 +208,7 @@ function SignUp() {
               opacity: 1
             }}
           />
-        </Link>
+        
         <div className="header-content">
           <nav className="header-nav">
             <ul className="nav-links">
@@ -187,7 +238,7 @@ function SignUp() {
                 }}> Sign Up</a>
               </li>
               <li>
-                <a href="#" className="nav-link" style={{
+                <Link to="/login" className="nav-link" style={{
                   width: '156px',
                   height: '47px',
                   position: 'absolute',
@@ -209,7 +260,7 @@ function SignUp() {
                   color: '#1172B6',
                   border: 'none',
                   borderRadius: '4px'
-                }}>Login</a>
+                }}>Login</Link>
               </li> 
               <li>
                 <a href="#" className="nav-link" style={{
@@ -267,7 +318,7 @@ function SignUp() {
       </header>
 
       {/* Sign Up Box */}
-      <div className="signup-box" style={{
+      <form className="signup-box" style={{
         width: '1180px',
         height: '1179px',
         transform: 'rotate(0deg)',
@@ -389,8 +440,8 @@ function SignUp() {
         {/* Company Legal Name Input */}
         <input
           type="text"
-          value={formData.firstName}
-          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+          value={formData.companyLegalName}
+          onChange={(e) => setFormData({ ...formData, companyLegalName: e.target.value })}
           style={{
             width: '450px',
             height: '50px',
@@ -458,8 +509,8 @@ function SignUp() {
         {/* Employee Count Input */}
         <input
           type="number"
-          value={formData.lastName}
-          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+          value={formData.employeeCount}
+          onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
           style={{
             width: '450px',
             height: '50px',
@@ -713,8 +764,8 @@ function SignUp() {
         {/* Billing Address Input */}
         <input
           type="text"
-          value={formData.email}
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          value={formData.billingAddress}
+          onChange={(e) => setFormData({ ...formData, billingAddress: e.target.value })}
           style={{
             width: '450px',
             height: '50px',
@@ -760,8 +811,8 @@ function SignUp() {
         {/* Delivery Address Input */}
         <input
           type="text"
-          value={formData.password}
-          onChange={(e) => setFormData({...formData, password: e.target.value})}
+          value={formData.deliveryAddress}
+          onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
           style={{
             width: '450px',
             height: '50px',
@@ -875,7 +926,8 @@ function SignUp() {
         />
 
         {/* Submit Button */}
-        <button
+        <button onClick={handleSubmit}
+          type="submit"
           style={{
             width: '488.74px',
             height: '75px',
@@ -892,17 +944,25 @@ function SignUp() {
             fontFamily: 'Poppins',
             fontWeight: 600,
             fontSize: '24px',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
             letterSpacing: '0%'
           }}
+          disabled={loading}
         >
-          Submit your request
+          {loading ? 'Submitting...' : 'Submit your request'}
         </button>
-      </div>
+        {/* Optionally show error or success message */}
+        {error && (
+          <div style={{ color: 'red', position: 'absolute', top: '1110px', left: '346px', fontFamily: 'Poppins', fontSize: '18px' }}>{error}</div>
+        )}
+        {success && (
+          <div style={{ color: 'green', position: 'absolute', top: '1140px', left: '346px', fontFamily: 'Poppins', fontSize: '18px' }}>Signup successful!</div>
+        )}
+      </form>
     </div>
   )
 }

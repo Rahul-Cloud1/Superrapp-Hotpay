@@ -853,18 +853,16 @@ const Orders = () => {
           />
           <div
             style={{
-              position: 'absolute',
-              top: '157.8px',
+              position: 'absolute',   top: '157.8px',
               left: `${741.92 + 350.7691955566406 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
               width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
+              height: '15.2px', opacity: 1,   fontFamily: 'Poppins',
               fontWeight: 500,
               fontStyle: 'normal',
               fontSize: '12.67px',
               lineHeight: '150%',
               letterSpacing: 0,
+              
               textAlign: 'center',
               verticalAlign: 'middle',
               color: 'rgba(0, 0, 0, 0.75)'

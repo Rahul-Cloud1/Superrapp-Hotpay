@@ -161,8 +161,11 @@ const ProfileSection = () => (
 const Miceform = () => {
   // Generate a random Query ID (6 digits)
   const [queryId] = React.useState(() => 'Q' + Math.floor(100000 + Math.random() * 900000));
-  const [location, setLocation] = React.useState('');
+  const [locations, setLocations] = React.useState([]); // multiple locations
+  const [locationInput, setLocationInput] = React.useState('');
   const [locationSuggestions, setLocationSuggestions] = React.useState([]);
+  // const [budgetperPerson, setBudgetperPerson] = React.useState('');
+  // const [eventDetails, setEventDetails] = React.useState('');
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
   const [pax, setPax] = React.useState('');
@@ -172,24 +175,88 @@ const Miceform = () => {
   const [mgPax, setMgPax] = React.useState('');
   const [inclusions, setInclusions] = React.useState('');
 
-  // Dummy location suggestions for auto-suggest
-  const allLocations = [
-    'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Kolkata', 'Pune', 'Goa', 'Jaipur', 'Ahmedabad'
-  ];
+  // Live location suggestions from OpenStreetMap Nominatim API
+  const [osmSuggestions, setOsmSuggestions] = React.useState([]);
+  const [fetchController, setFetchController] = React.useState(null);
 
-  const handleLocationChange = (e) => {
+  React.useEffect(() => {
+    if (locationInput.length < 2) {
+      setOsmSuggestions([]);
+      if (fetchController) fetchController.abort();
+      return;
+    }
+    const controller = new AbortController();
+    setFetchController(controller);
+    const timeout = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationInput)}&format=json&addressdetails=1&limit=5`, {
+        signal: controller.signal
+      })
+        .then(res => res.json())
+        .then(data => {
+          setOsmSuggestions(data);
+        })
+        .catch(err => {
+          if (err.name !== 'AbortError') setOsmSuggestions([]);
+        });
+    }, 300); // debounce
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+    // eslint-disable-next-line
+  }, [locationInput]);
+
+  // Multi-location input handlers
+  const handleLocationInputChange = (e) => {
     const value = e.target.value;
-    setLocation(value);
-    setLocationSuggestions(
-      value.length > 0
-        ? allLocations.filter(loc => loc.toLowerCase().includes(value.toLowerCase()))
-        : []
-    );
+    setLocationInput(value);
+    // Suggestions will be set by useEffect
+    setLocationSuggestions([]);
   };
 
   const handleLocationSelect = (loc) => {
-    setLocation(loc);
+    if (!locations.includes(loc)) {
+      setLocations([...locations, loc]);
+    }
+    setLocationInput('');
+    setOsmSuggestions([]);
     setLocationSuggestions([]);
+  };
+
+  const handleRemoveLocation = (loc) => {
+    setLocations(locations.filter(l => l !== loc));
+  };
+
+  // Submit handler
+  const handleSubmit = async () => {
+    // ...existing code...
+    // Map frontend fields to backend fields
+    const payload = {
+      startDate,
+      endDate,
+      noofPax: Number(pax),
+      location: locations[0] || '',
+      locations: locations.length > 0 ? locations : undefined,
+      eventType,
+      roomsRequired: roomRequired === 'Yes' ? 'true' : 'false',
+      inclusions: inclusions || undefined,
+    };
+    // Only include mgRooms and mgPax if rooms are required
+    if (roomRequired === 'Yes') {
+      if (mgRooms) payload.mgRooms = Number(mgRooms);
+      if (mgPax) payload.mgPax = Number(mgPax);
+    }
+    try {
+      await fetch('http://10.10.2.109:5000/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      alert('Query submitted successfully!');
+      // Optionally reset form here
+    } catch (err) {
+      alert('Failed to submit query.');
+    }
   };
 
   return (
@@ -310,26 +377,46 @@ const Miceform = () => {
         {/* MICE Form Card */}
         <div className="miceform-card">
           <h2 className="miceform-section-title">MICE Query Form</h2>
-          {/* Query ID (auto) */}
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 18 }}>
-            <label className="miceform-label">Query ID</label>
-            <input className="miceform-input" type="text" value={queryId} readOnly />
-          </div>
-          {/* Location with type & auto-suggest */}
+          {/* Location with multi-select & auto-suggest (only first will be sent) */}
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 18, position: 'relative' }}>
-            <label className="miceform-label">Location</label>
+            <label className="miceform-label">Location(s) <span style={{fontWeight:400, fontSize:12}}>(Only first will be sent)</span></label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+              {locations.map(loc => (
+                <span key={loc} style={{
+                  background: '#e6f0ff',
+                  borderRadius: '12px',
+                  padding: '4px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  marginRight: 4,
+                }}>
+                  {loc}
+                  <button type="button" onClick={() => handleRemoveLocation(loc)} style={{
+                    marginLeft: 6,
+                    background: 'none',
+                    border: 'none',
+                    color: '#007BFF',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: 14,
+                  }}>&times;</button>
+                </span>
+              ))}
+            </div>
             <input
               className="miceform-input"
               type="text"
-              value={location}
-              onChange={handleLocationChange}
+              value={locationInput}
+              onChange={handleLocationInputChange}
               placeholder="Type location..."
               autoComplete="off"
             />
-            {locationSuggestions.length > 0 && (
+            {osmSuggestions.length > 0 && (
               <ul className="miceform-autosuggest-list">
-                {locationSuggestions.map(loc => (
-                  <li key={loc} onClick={() => handleLocationSelect(loc)}>{loc}</li>
+                {osmSuggestions.map(item => (
+                  <li key={item.place_id} onClick={() => handleLocationSelect(item.display_name)}>{item.display_name}</li>
                 ))}
               </ul>
             )}
@@ -350,6 +437,7 @@ const Miceform = () => {
             <label className="miceform-label">No. of Pax</label>
             <input className="miceform-input" type="number" min="1" value={pax} onChange={e => setPax(e.target.value)} placeholder="Enter number" />
           </div>
+          {/* Budget per Person removed as per request */}
           {/* Type of Event Dropdown */}
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 18 }}>
             <label className="miceform-label">Type of Event</label>
@@ -385,9 +473,10 @@ const Miceform = () => {
               </div>
             </div>
           )}
+          {/* Event Details removed as per request */}
           {/* Inclusions (open column) */}
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 18 }}>
-            <label className="miceform-label">Inclusions</label>
+            <label className="miceform-label">Inclusions (optional)</label>
             <textarea
               className="miceform-textarea"
               value={inclusions}
@@ -397,7 +486,7 @@ const Miceform = () => {
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-            <button className="miceform-submit-btn" type="button">Submit Query</button>
+            <button className="miceform-submit-btn" type="button" onClick={handleSubmit}>Submit Query</button>
           </div>
         </div>
         <main className="profile-scrollable" style={{paddingTop: '120px', height: 'calc(100vh - 120px)'}}>

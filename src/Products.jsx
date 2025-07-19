@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -6,7 +5,13 @@ import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
 import profileIcon from './assets/My Profile Icon.png';
 import officestationaryicon from './assets/officestationaryicon.png';
+import pens from './assets/pens.png';
 import './App.css';
+
+
+// No hardcoded products, only API data will be used
+
+
 
 const styles = {
   header: {
@@ -139,7 +144,6 @@ const ProfileSection = () => (
   </>
 );
 
-
 const sidebarStyle = {
   width: '210px',
   height: '779px',
@@ -163,13 +167,11 @@ const sidebarStyle = {
   msOverflowStyle: 'none', // for IE and Edge
 };
 
-// Hide scrollbar for Chrome, Safari and Opera
 const sidebarScrollbarStyle = `
 aside[style]::-webkit-scrollbar {
   display: none;
 }
 `;
-// End of sidebarStyle object
 
 const categoriesData = [
   {
@@ -177,7 +179,7 @@ const categoriesData = [
     icon: officestationaryicon,
     subcategories: [
       "Pens & Pencils",
-      "Notebooks & Diaries",
+      "Notebooks",
       "Files & Folders",
       "Sticky Notes & Pads",
       "Staplers & Punches"
@@ -194,158 +196,68 @@ const categoriesData = [
       "Dustbins & Trash Bags"
     ]
   },
-  {
-    name: "Office Pantry",
-    icon: officestationaryicon,
-    subcategories: [
-      "Tea & Coffee Supplies",
-      "Snacks & Biscuits",
-      "Water Bottles & Dispensers",
-      "Sugar, Milk Powder & Creamers",
-      "Paper Cups & Plates"
-    ]
-  },
-  {
-    name: "Disposables",
-    icon: officestationaryicon,
-    subcategories: [
-      "Disposable Plates & Bowls",
-      "Disposable Cutlery",
-      "Tissue Papers & Napkins",
-      "Garbage Bags",
-      "Paper Cups & Lids"
-    ]
-  },
-  {
-    name: "Electronics",
-    icon: officestationaryicon,
-    subcategories: [
-      "Printers & Scanners",
-      "Projectors & Screens",
-      "Calculators",
-      "Mobile Accessories",
-      "Bluetooth Speakers"
-    ]
-  },
-  {
-    name: "Laptop & Luggage Bags",
-    icon: officestationaryicon,
-    subcategories: [
-      "Laptop Backpacks",
-      "Laptop Sleeves",
-      "Trolley Bags",
-      "Messenger Bags",
-      "Duffel Bags"
-    ]
-  },
-  {
-    name: "IT Equipment",
-    icon: officestationaryicon,
-    subcategories: [
-      "Keyboards & Mice",
-      "Monitors",
-      "UPS & Power Supplies",
-      "Cables & Connectors",
-      "Routers & Modems"
-    ]
-  },
-  {
-    name: "Sports Equipment",
-    icon: officestationaryicon,
-    subcategories: [
-      "Yoga Mats",
-      "Dumbbells & Weights",
-      "Cricket Bats & Balls",
-      "Table Tennis Sets",
-      "Resistance Bands"
-    ]
-  },
-  {
-    name: "Office Decor",
-    icon: officestationaryicon,
-    subcategories: [
-      "Indoor Plants",
-      "Wall Art & Frames",
-      "Desk Organizers",
-      "Clocks & Nameplates",
-      "Scented Candles & Diffusers"
-    ]
-  },
-  {
-    name: "Joining Kit",
-    icon: officestationaryicon,
-    subcategories: [
-      "Welcome Cards",
-      "Company Branded Notebooks",
-      "ID Card Holders",
-      "T-Shirts or Hoodies",
-      "Mugs & Bottles"
-    ]
-  },
-  {
-    name: "Candies & Chocolates",
-    icon: officestationaryicon,
-    subcategories: [
-      "Assorted Chocolates",
-      "Hard Candies",
-      "Toffees",
-      "Premium Gift Boxes",
-      "Sugar-Free Options"
-    ]
-  },
-  {
-    name: "Office Furniture",
-    icon: officestationaryicon,
-    subcategories: [
-      "Office Chairs",
-      "Desks & Workstations",
-      "Filing Cabinets",
-      "Conference Tables",
-      "Pedestal Drawers"
-    ]
-  },
-  {
-    name: "Gift Hampers",
-    icon: officestationaryicon,
-    subcategories: [
-      "Festive Hampers",
-      "Wellness Hampers",
-      "Gourmet Snack Boxes",
-      "Corporate Branding Hampers",
-      "Customizable Hampers"
-    ]
-  },
-  {
-    name: "Plastic & Glassware",
-    icon: officestationaryicon,
-    subcategories: [
-      "Storage Containers",
-      "Glass Jars & Bottles",
-      "Microwave-Safe Bowls",
-      "Plastic Cups & Tumblers",
-      "Food Storage Boxes"
-    ]
-  },
+  // ...rest of your categories...
 ];
 
 const Products = () => {
-  // Track which dropdown is open by index
+
+  // State for products (empty by default, filled by API)
+  const [products, setProducts] = useState([]);
+
+  // Fetch API data and merge with hardcoded products
+  useEffect(() => {
+    fetch('http://10.10.2.109:5000/product?category=Pens%20%26%20Pencils')
+      .then(res => res.json())
+      .then(data => {
+
+        console.log(data);
+        
+        // Map API products to ensure they have the required fields
+        const mappedApiProducts = data.map(apiProduct => ({
+          ...apiProduct,
+          image: apiProduct.image || pens,
+          category: apiProduct.category || 'Office Stationery',
+          subcategory: apiProduct.subCategory || '',
+        }));
+        setProducts(mappedApiProducts);
+      })
+      .catch(() => {
+        setProducts([]);
+      });
+  }, []);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
-    // Parse query parameter
     const params = new URLSearchParams(location.search);
     const selectedCategory = params.get('category');
     if (selectedCategory) {
-      // Find the index of the category that matches the query param (case-insensitive)
       const idx = categoriesData.findIndex(cat => cat.name.toLowerCase() === decodeURIComponent(selectedCategory).toLowerCase());
       if (idx !== -1) {
         setOpenDropdown(idx);
+        setSelectedSubcategory(null);
       }
     }
   }, [location.search]);
+
+  // --- FILTER PRODUCTS BASED ON SELECTION ---
+  let filteredProducts = [];
+  if (openDropdown !== null && categoriesData[openDropdown]) {
+    const categoryName = categoriesData[openDropdown].name;
+    if (selectedSubcategory) {
+      filteredProducts = products.filter(
+        p => p.category === categoryName && p.subcategory === selectedSubcategory
+      );
+    } else {
+      filteredProducts = products.filter(
+        p => p.category === categoryName
+      );
+    }
+  } else {
+    filteredProducts = products; // Show all if nothing selected
+  }
 
   return (
     <div style={{
@@ -374,7 +286,6 @@ const Products = () => {
           scrollbar-width: none; /* Firefox */
           -ms-overflow-style: none; /* IE and Edge */
         }
-        /* Hide scrollbar for the custom dropdown */
         .custom-category-dropdown::-webkit-scrollbar {
           display: none;
         }
@@ -458,6 +369,7 @@ const Products = () => {
                   onClick={() => {
                     setOpenDropdown(idx);
                     setDropdownOpen(false);
+                    setSelectedSubcategory(null);
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,123,255,0.12)'}
                   onMouseLeave={e => e.currentTarget.style.background = openDropdown === idx ? 'rgba(0,123,255,0.08)' : '#fff'}
@@ -482,15 +394,132 @@ const Products = () => {
             fontWeight: 450,
             fontSize: '16px',
           }}>
+            {/* "All" option */}
+            <div
+              style={{
+                padding: '8px 18px',
+                cursor: 'pointer',
+                color: '#007BFF',
+                fontWeight: 600,
+                background: selectedSubcategory === null ? 'rgba(0,123,255,0.08)' : 'transparent'
+              }}
+              onClick={() => setSelectedSubcategory(null)}
+            >
+              All
+            </div>
             {categoriesData[openDropdown].subcategories.map((sub, subIdx) => (
-              <div key={subIdx} style={{ padding: '8px 18px', cursor: 'pointer', borderBottom: subIdx !== categoriesData[openDropdown].subcategories.length - 1 ? '1px solid #eee' : 'none' }}>
+              <div
+                key={subIdx}
+                style={{
+                  padding: '8px 18px',
+                  cursor: 'pointer',
+                  borderBottom: subIdx !== categoriesData[openDropdown].subcategories.length - 1 ? '1px solid #eee' : 'none',
+                  background: selectedSubcategory === sub ? 'rgba(0,123,255,0.08)' : 'transparent'
+                }}
+                onClick={() => setSelectedSubcategory(sub)}
+              >
                 {sub}
               </div>
             ))}
           </div>
         )}
       </aside>
-      {/* ...rest of Products page... */}
+      {/* Dynamic Products Grid */}
+      <main style={{
+        position: 'absolute',
+        top: '147px',
+        left: '235px',
+        right: 0,
+        padding: '1px',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(6, 1fr)',
+        gap: '18px',
+        width: '1100px',
+        minHeight: '10px',
+        background: 'transparent',
+      }}>
+        {filteredProducts.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#888', fontSize: '18px' }}>
+            No products found.
+          </div>
+        ) : (
+          filteredProducts.map((product, idx) => (
+            <div key={product.id} style={{
+              width: '160px',
+              height: '220px',
+              borderRadius: '5px',
+              background: 'rgba(255, 255, 255, 1)',
+              color: '#073250',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              opacity: 1,
+              transform: 'rotate(0deg)',
+              margin: '0 auto',
+              padding: '10px',
+            }}>
+              <div style={{
+                width: '130px',
+                height: '150px',
+                background: '#fff',
+                borderRadius: '1px',
+                marginBottom: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                <img src={product.image} alt={product.name} style={{
+                  width: '100px',
+                  height: '150px',
+                  objectFit: 'contain'
+                }} />
+              </div>
+              <div style={{
+                fontWeight: 500,
+                fontSize: '15px',
+                marginBottom: '4px',
+                textAlign: 'left'
+              }}>
+                {product.name}<br />{product.description}
+              </div>
+              <div style={{
+                fontSize: '15px',
+                fontWeight: 400,
+                marginBottom: '1px',
+                textAlign: 'left'
+              }}>
+                ₹{product.price}/unit
+              </div>
+              <div style={{
+                fontSize: '10px',
+                fontWeight: 400,
+                marginBottom: '2px',
+                textAlign: 'left'
+              }}>
+                MOQ- {product.moq}pcs
+              </div>
+              <button style={{
+                border: 'none',
+                borderRadius: '6px',
+                background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
+                color: 'white',
+                fontFamily: 'Poppins',
+                fontWeight: 600,
+                fontSize: '12px',
+                cursor: 'pointer',
+                width: '100%',
+                height: '28px',
+                marginTop: 'auto',
+              }}>
+                Add to Cart
+              </button>
+            </div>
+          ))
+        )}
+      </main>
     </div>
   );
 };

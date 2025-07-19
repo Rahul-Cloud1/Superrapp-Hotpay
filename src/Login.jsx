@@ -1,51 +1,46 @@
+
+// API endpoints
+const SEND_OTP_API = 'http://10.10.2.109:5000/auth/login';
+
+
+async function sendOTP(email) {
+  const response = await fetch(SEND_OTP_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  return response;
+}
+// API endpoints
+const VERIFY_OTP_API = 'http://10.10.2.109:5000/auth/verify';
+
+async function verifyOTP(email, otpValue) {
+  const response = await fetch(VERIFY_OTP_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp: otpValue }),
+  });
+  return response;
+}
+
+import React, { useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-import { Link } from 'react-router-dom';
-import logo from './assets/image 3.png';
+import logo from './assets/logo.png';
 import applink from './assets/applink.png';
-import { useEffect, useState } from 'react';
 
-// Login page component
 function Login() {
-  // State to control OTP section visibility
   const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '', '']);
   const [showOTP, setShowOTP] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
+  const navigate = useNavigate();
 
-  // Hide scrollbars visually but allow scrolling
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-    document.body.style.height = 'auto';
-    document.documentElement.style.overflow = 'auto';
-    document.documentElement.style.height = 'auto';
-    // Add CSS to hide scrollbars visually but keep functionality
-    const style = document.createElement('style');
-    style.textContent = `
-      body, html { margin: 0; padding: 0; height: auto !important; min-height: 100vh; }
-      ::-webkit-scrollbar { display: none !important; }
-      body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
-    `;
-    document.head.appendChild(style);
-    // Cleanup function
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.height = '';
-      document.head.removeChild(style);
-    };
-  }, []);
-
-  // Main login container
   return (
-    <div className="login-container" style={{
-      width: '100vw',
-      minWidth: '1400px',
-      height: 'auto',
-      minHeight: '100vh',
-      background: 'rgba(255, 255, 255, 1)',
-      position: 'relative',
-      overflow: 'visible'
-    }}>
-      {/* Header Section */}
+    <div>
       <header className="login-page-header" style={{
         width: '1380px',
         height: '120px',
@@ -58,34 +53,30 @@ function Login() {
         left: 0,
         zIndex: 10
       }}>
-        <Link to="/app">
-          <img 
-            src={logo} 
-            alt=""
-            style={{
-              width: '206px',
-              height: '92px',
-              position: 'absolute',
-              top: '24px',
-              left: '59px',
-              transform: 'rotate(0deg)',
-              opacity: 1
-            }}
-          />
-        </Link>
-        <div className="header-content">
-          <div className="header-logo">
-            
-          </div>
+        <img
+          src={logo}
+          alt="SuperApp Logo"
+          style={{
+            width: '250.92px',
+            height: '100px',
+            position: 'absolute',
+            top: '21px',
+            left: '41px',
+            transform: 'rotate(0deg)',
+            opacity: 1,
+            zIndex: 11
+          }}
+        />
+        <div className="header-content" style={{ flex: 1, marginLeft: '300px', height: '100%' }}>
           <nav className="header-nav">
-            <ul className="nav-links">
-               <li>
-                <a href="#" className="nav-link" style={{
+            <ul className="nav-links" style={{ display: 'flex', gap: '24px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center', justifyContent: 'flex-end', height: '100%' }}>
+              <li>
+                <Link to="/signup" className="nav-link" style={{
                   width: '156px',
                   height: '47px',
                   position: 'absolute',
                   top: '48px',
-                  left: '534px',
+                  left: '570px',
                   transform: 'rotate(0deg)',
                   opacity: 1,
                   display: 'flex',
@@ -102,7 +93,7 @@ function Login() {
                   color: '#1172B6',
                   border: 'none',
                   borderRadius: '4px'
-                }}> Sign Up</a>
+                }}>Sign Up</Link>
               </li>
               <li>
                 <a href="#" className="nav-link" style={{
@@ -128,7 +119,7 @@ function Login() {
                   border: 'none',
                   borderRadius: '4px'
                 }}>Login</a>
-              </li> 
+              </li>
               <li>
                 <a href="#" className="nav-link" style={{
                   width: '156px',
@@ -153,7 +144,7 @@ function Login() {
                   border: 'none',
                   borderRadius: '4px'
                 }}>Contact Us</a>
-              </li> 
+              </li>
               <li>
                 <a href="#" className="nav-link" style={{
                   width: '180px',
@@ -178,7 +169,7 @@ function Login() {
                   border: 'none',
                   borderRadius: '4px'
                 }}>Vendor Login</a>
-              </li>               
+              </li>
             </ul>
           </nav>
         </div>
@@ -403,11 +394,6 @@ function Login() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onBlur={() => {
-            if (email.trim() !== '' && email.includes('@')) {
-              setShowOTP(true)
-            }
-          }}
           style={{
             width: '320px',
             height: '40px',
@@ -422,8 +408,8 @@ function Login() {
             color: '#333'
           }}
           placeholder="Enter your email"
+          required
         />
-        
         {/* Line 1 */}
         <div style={{
           width: '280.56px',
@@ -459,123 +445,154 @@ function Login() {
               textAlign: 'center',
               color: '#000000ff'
             }}>Enter OTP</div>
-            
-            {/* Otp 1 */}
+            {/* OTP Inputs */}
             <div style={{
-              width: '50px',
-              height: '50px',
+              display: 'flex',
+              gap: '10px',
               position: 'absolute',
               top: '349px',
               left: '72px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              borderRadius: '5px',
-              background: 'rgba(17, 114, 182, 0.15)'
-            }}></div>
-            {/* Otp 2 */}
-            <div style={{
-              width: '50px',
-              height: '50px',
-              position: 'absolute',
-              top: '349px',
-              left: '141px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              borderRadius: '5px',
-              background: 'rgba(17, 114, 182, 0.15)'
-            }}></div>
-            {/* Otp 3 */}
-            <div style={{
-              width: '50px',
-              height: '50px',
-              position: 'absolute',
-              top: '349px',
-              left: '208px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              borderRadius: '5px',
-              background: 'rgba(17, 114, 182, 0.15)'
-            }}></div>
-            {/* Otp 4 */}
-            <div style={{
-              width: '50px',
-              height: '50px',
-              position: 'absolute',
-              top: '349px',
-              left: '277px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              borderRadius: '5px',
-              background: 'rgba(17, 114, 182, 0.15)'
-            }}></div>
-            {/* Otp 5 */}
-            <div style={{
-              width: '50px',
-              height: '50px',
-              position: 'absolute',
-              top: '349px',
-              left: '344px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              borderRadius: '5px',
-              background: 'rgba(17, 114, 182, 0.15)'
-            }}></div>
+            }}>
+              {otp.map((digit, idx) => (
+                <input
+                  key={idx}
+                  ref={otpRefs[idx]}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={e => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    if (!val) return;
+                    const newOtp = [...otp];
+                    newOtp[idx] = val;
+                    setOtp(newOtp);
+                    if (val && idx < 4) {
+                      otpRefs[idx + 1].current.focus();
+                    }
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Backspace') {
+                      if (otp[idx]) {
+                        const newOtp = [...otp];
+                        newOtp[idx] = '';
+                        setOtp(newOtp);
+                      } else if (idx > 0) {
+                        otpRefs[idx - 1].current.focus();
+                      }
+                    }
+                  }}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    fontFamily: 'Poppins',
+                    fontSize: '22px',
+                    color: '#333',
+                    background: 'white',
+                    textAlign: 'center',
+                  }}
+                  placeholder="-"
+                />
+              ))}
+            </div>
           </>
         )}
         
-        {/* Sign in Button */}
-        <div 
-          onClick={() => {
-            if (!showOTP && email.trim() !== '' && email.includes('@')) {
-              setShowOTP(true)
+        {/* Sign in/Send OTP Button */}
+        <div
+          onClick={async () => {
+            if (loading) return;
+            setError('');
+            if (!showOTP) {
+              // Send OTP
+              if (email.trim() === '' || !email.includes('@')) {
+                setError('Please enter a valid email.');
+                return;
+              }
+              setLoading(true);
+              try {
+                const response = await sendOTP(email);
+                if (!response.ok) throw new Error('Failed to send OTP');
+                setShowOTP(true);
+                setInfo('OTP sent to your email.');
+              } catch (err) {
+                setError(err.message || 'Error sending OTP');
+              } finally {
+                setLoading(false);
+              }
+            } else {
+              // Verify OTP
+              const otpValue = otp.join('');
+              if (otpValue.length < 5) {
+                setError('Please enter the 5-digit OTP.');
+                return;
+              }
+              setLoading(true);
+              try {
+                const response = await verifyOTP(email, otpValue);
+                if (!response.ok) throw new Error('Invalid OTP');
+                // Handle successful login (e.g., redirect, save token, etc.)
+                setInfo('Login successful! Redirecting...');
+                setTimeout(() => navigate('/app'), 1200);
+              } catch (err) {
+                setError(err.message || 'Login failed');
+              } finally {
+                setLoading(false);
+              }
             }
           }}
           style={{
-          width: '321.73px',
-          height: '49.37px',
-          position: 'absolute',
-          top: '428px',
-          left: '72px',
-          transform: 'rotate(0deg)',
-          opacity: 1,
-          borderRadius: '10.97px',
-          background: 'linear-gradient(90deg, #6CB2DA 46.63%, #395F74 100%)',
-          boxShadow: '0px 8.52px 7.67px 0px rgba(57, 95, 116, 0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer'
-        }}>
+            width: '321.73px',
+            height: '49.37px',
+            position: 'absolute',
+            top: '428px',
+            left: '72px',
+            transform: 'rotate(0deg)',
+            opacity: loading ? 0.7 : 1,
+            borderRadius: '10.97px',
+            background: 'linear-gradient(90deg, #6CB2DA 46.63%, #395F74 100%)',
+            boxShadow: '0px 8.52px 7.67px 0px rgba(57, 95, 116, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            pointerEvents: loading ? 'none' : 'auto',
+          }}
+        >
           <span style={{
             fontFamily: 'Poppins',
             fontWeight: 600,
             fontSize: '18px',
             color: 'white',
             textAlign: 'center'
-          }}>{showOTP ? 'Sign in' : 'Send OTP'}</span>
+          }}>{loading ? 'Please wait...' : showOTP ? 'Sign in' : 'Send OTP'}</span>
         </div>
+        {/* Info message */}
+        {info && !error && (
+          <div style={{
+            color: 'green',
+            position: 'absolute',
+            top: '470px',
+            left: '72px',
+            fontFamily: 'Poppins',
+            fontSize: '16px'
+          }}>{info}</div>
+        )}
+        {/* Error message */}
+        {error && (
+          <div style={{
+            color: 'red',
+            position: 'absolute',
+            top: '490px',
+            left: '72px',
+            fontFamily: 'Poppins',
+            fontSize: '16px'
+          }}>{error}</div>
+        )}
         
-        {/* Forgot Password Text */}
-        <div style={{
-          width: '304.90px',
-          height: '23px',
-          position: 'absolute',
-          top: '503.78px',
-          left: '79.45px',
-          transform: 'rotate(0deg)',
-          opacity: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'Poppins',
-          fontWeight: 500,
-          fontSize: '15.36px',
-          lineHeight: '100%',
-          letterSpacing: '0%',
-          textAlign: 'center',
-          color: 'rgba(0, 0, 0, 0.75)',
-          cursor: 'pointer'
-        }}>Forgot your password?</div>
+        {/* Forgot Password Text removed as requested */}
         
         {/* Sign up Text */}
         <div style={{
@@ -600,15 +617,16 @@ function Login() {
           animationDuration: '0ms'
         }}>
           Don't have an account? 
-          <span style={{
+          <Link to="/signup" style={{
             color: '#1172B6',
             textDecoration: 'underline',
             textDecorationStyle: 'solid',
             marginLeft: '4px'
-          }}>Sign up</span>
+          }}>Sign up</Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
-export default Login
+
+export default Login;
