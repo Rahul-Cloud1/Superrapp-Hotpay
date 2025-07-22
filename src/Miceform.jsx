@@ -247,7 +247,7 @@ const Miceform = () => {
       if (mgPax) payload.mgPax = Number(mgPax);
     }
     try {
-      await fetch('http://10.10.2.109:5000/quote', {
+      await fetch('http://10.10.0.218:5000/quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

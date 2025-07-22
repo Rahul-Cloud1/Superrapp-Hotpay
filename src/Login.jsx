@@ -1,18 +1,20 @@
 
 // API endpoints
-const SEND_OTP_API = 'http://10.10.2.109:5000/auth/login';
+const SEND_OTP_API = 'http://10.10.0.218:5000/auth/login';
 
 
 async function sendOTP(email) {
   const response = await fetch(SEND_OTP_API, {
     method: 'POST',
+
+    
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   });
   return response;
 }
 // API endpoints
-const VERIFY_OTP_API = 'http://10.10.2.109:5000/auth/verify';
+const VERIFY_OTP_API = 'http://10.10.0.218:5000/auth/verify';
 
 async function verifyOTP(email, otpValue) {
   const response = await fetch(VERIFY_OTP_API, {
@@ -57,10 +59,10 @@ function Login() {
           src={logo}
           alt="SuperApp Logo"
           style={{
-            width: '250.92px',
-            height: '100px',
+            width: '220px',
+            height: '130px',
             position: 'absolute',
-            top: '21px',
+            top: '10px',
             left: '41px',
             transform: 'rotate(0deg)',
             opacity: 1,
@@ -340,11 +342,11 @@ function Login() {
           src={logo} 
           alt="SuperApp Logo"
           style={{
-            width: '292.71px',
-            height: '131.33px',
+            width: '230px',
+            height: '140px',
             position: 'absolute',
             top: '34.43px',
-            left: '85.59px',
+            left: '120.59px',
             transform: 'rotate(0deg)',
             opacity: 1
           }}
@@ -516,6 +518,10 @@ function Login() {
                 const response = await sendOTP(email);
                 if (!response.ok) throw new Error('Failed to send OTP');
                 setShowOTP(true);
+
+                // for Testing
+                console.log('response', await response.json());
+                // g
                 setInfo('OTP sent to your email.');
               } catch (err) {
                 setError(err.message || 'Error sending OTP');
@@ -533,7 +539,11 @@ function Login() {
               try {
                 const response = await verifyOTP(email, otpValue);
                 if (!response.ok) throw new Error('Invalid OTP');
-                // Handle successful login (e.g., redirect, save token, etc.)
+                // Parse token from response and save to localStorage
+                const data = await response.json();
+                if (data.token) {
+                  localStorage.setItem('token', data.token);
+                }
                 setInfo('Login successful! Redirecting...');
                 setTimeout(() => navigate('/app'), 1200);
               } catch (err) {

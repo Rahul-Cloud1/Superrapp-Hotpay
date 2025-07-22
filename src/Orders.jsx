@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
@@ -13,7 +13,6 @@ import approvalicon from './assets/approvalicon.png';
 import invoiceicon from './assets/invoiceicon.png';
 import logouticon from './assets/logouticon.png';
 import './App.css';
-
 
 const styles = {
   profileStyle: {
@@ -155,55 +154,59 @@ const ProfileSection = () => (
 
 
 
-
-// Helper: sidebar icon style
-function sidebarIconStyle(top, left, width, height) {
-  return {
-    position: 'absolute',
-    top: `${top}px`,
-    left: `${left}px`,
-    width,
-    height,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'none',
-    border: 'none',
-    padding: 0,
-    cursor: 'pointer',
-    opacity: 1,
-    transition: 'transform 300ms ease-out',
-  };
-}
-
-// Helper: animate icon (scale effect)
-function animateIcon(e) {
-  e.currentTarget.style.transform = 'scale(1.1)';
-  setTimeout(() => {
-    e.currentTarget.style.transform = 'scale(1)';
-  }, 300);
-}
-
 const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function fetchOrders() {
+      setLoading(true);
+      setError('');
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          document.cookie = `token=${token}; path=/`;
+        }
+        const res = await fetch('http://10.10.0.218:5000/Orders', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!res.ok) throw new Error('Failed to fetch orders');
+        const data = await res.json();
+        setOrders(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setError(err.message || 'Error fetching orders');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrders();
+  }, []);
+
+  // Helper for progress line status
+  const getStatusIndex = (status) => {
+    // status: 'placed', 'approved', 'out_for_delivery', 'delivered'
+    switch (status) {
+      case 'placed': return 0;
+      case 'approved': return 1;
+      case 'out_for_delivery': return 2;
+      case 'delivered': return 3;
+      default: return 0;
+    }
+  };
+
   return (
     <div style={styles.profileStyle}>
-      {/* Hide scrollbar but allow scrolling */}
       <style>{`
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .profile-scrollable::-webkit-scrollbar {
-          display: none;
-        }
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .profile-scrollable {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;     /* Firefox */
-        }
+        .profile-scrollable::-webkit-scrollbar { display: none; }
+        .profile-scrollable { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
       <div style={{width: '100%', minHeight: '100vh', position: 'relative'}}>
         <header style={styles.header}>
-        <Link to="/app">
-          <img src={logo} alt="Logo" style={styles.logo} />
-        </Link>
+          <Link to="/app">
+            <img src={logo} alt="Logo" style={styles.logo} />
+          </Link>
           <SearchBar />
           <ViewCartButton />
           <ProfileSection />
@@ -217,61 +220,47 @@ const Orders = () => {
           background: 'rgba(255, 255, 255, 1)',
           borderTop: '1px solid rgba(0,0,0,0.08)',
           borderWidth: '1px',
-          transform: 'rotate(0deg)',
           opacity: 1,
+          transform: 'rotate(0deg)',
           zIndex: 10
         }}>
-          {/* Sidebar navigation icons */}
           <nav style={{ position: 'relative', width: '100%', height: '100%' }}>
-            {/* Profile icon and label */}
             <div style={{ position: 'absolute', top: 31, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/profile" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Profile">
                 <img src={profileicon} alt="Profile" style={{ width: 25, height: 25 }} />
               </a>
               <a href="/profile" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>My Profile</a>
             </div>
-
-            {/* Orders icon and label */}
             <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/orders" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Orders">
                 <img src={ordericon} alt="Orders" style={{ width: 25, height: 25 }} />
               </a>
               <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13, opacity: 1 }}>Orders</span>
             </div>
-
-            {/* Wallet icon and label */}
             <div style={{ position: 'absolute', top: 163, left: 23, display: 'flex', alignItems: 'center' }}>
-              <a href="/wallet" style={{ width: 19.8, height: 18.75, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Wallet">
+              <a href="/wallet" style={{ width: 19.8, height: 18.75, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Wallet">
                 <img src={walleticon} alt="Wallet" style={{ width: 19.8, height: 18.75 }} />
               </a>
-              <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1 }}>SuperWallet</span>
+              <a href="/wallet" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>SuperWallet</a>
             </div>
-
-            {/* Support icon and label */}
             <div style={{ position: 'absolute', top: 226, left: 23, display: 'flex', alignItems: 'center' }}>
               <a href="/support" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Support">
                 <img src={supporticon} alt="Support" style={{ width: 25, height: 25 }} />
               </a>
               <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 14, opacity: 1 }}>Support</span>
             </div>
-
-            {/* Approval icon and label */}
             <div style={{ position: 'absolute', top: 291, left: 26, display: 'flex', alignItems: 'center' }}>
-              <a href="/approval" style={{ width: 18.75, height: 20.83, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Approval">
+              <a href="/approval" style={{ width: 18.75, height: 20.83, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Approval">
                 <img src={approvalicon} alt="Approval" style={{ width: 18.75, height: 20.83 }} />
               </a>
-              <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1 }}>Approvals</span>
+              <a href="/approval" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15, opacity: 1, textDecoration: 'none' }}>Approvals</a>
             </div>
-
-            {/* Invoice icon and label */}
             <div style={{ position: 'absolute', top: 351.83, left: 23, display: 'flex', alignItems: 'center' }}>
-              <a href="/invoice" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }} aria-label="Invoice">
+              <a href="/invoice" style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Invoice">
                 <img src={invoiceicon} alt="Invoice" style={{ width: 25, height: 25 }} />
               </a>
-              <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13, opacity: 1 }}>Invoices</span>
+              <a href="/invoice" style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13, opacity: 1, textDecoration: 'none' }}>Invoices</a>
             </div>
-
-            {/* Logout icon and label */}
             <div style={{ position: 'absolute', top: 416.83, left: 26, display: 'flex', alignItems: 'center' }}>
               <a href="/login" style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, textDecoration: 'none' }} aria-label="Logout">
                 <img src={logouticon} alt="Logout" style={{ width: 20, height: 20 }} />
@@ -279,883 +268,85 @@ const Orders = () => {
               <a href="/login" style={{ color: 'red', fontFamily: 'Poppins', fontSize: 14, opacity: 1, textDecoration: 'none' }}>Log out</a>
             </div>
           </nav>
-
         </aside>
-        {/* 'My Orders' box under header */}
-        <div
-          style={{
+        <main className="profile-scrollable" style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 120px)', overflow: 'auto'}}>
+          <div style={{
             position: 'absolute',
             top: '151px',
             left: '235px',
             width: '266px',
             height: '78px',
-            borderRadius: '12px',
-            background: 'none',
-            opacity: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: 'none',
             fontFamily: 'Poppins',
-            fontWeight: 600,
-            fontSize: '32px',
-            color: 'black',
-            zIndex: 2,
-            transform: 'rotate(0deg)',
-          }}
-        >
-          My Orders
-          <div
-            style={{
-              position: 'absolute',
-              top: '175px',
-              left: '12px',
-              width: '510px',
-              height: '27px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              color: 'rgba(0, 0, 0, 1)'
-            }}
-          >
-            JK Copier Paper - 20 pc, Parker Beta Neo Metalic Blue - 100 pc
-          </div>
-        </div>
-        {/* I under 'My Orders' text */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '237px',
-            left: '223px',
-            width: '1190px',
-            height: '194px',
-            borderRadius: '10px',
+            fontWeight: 500,
+            fontStyle: 'Medium',
+            fontSize: '52px',
+            lineHeight: '100%',
+            letterSpacing: 0,
+            verticalAlign: 'middle',
+            color: '#000000',
             opacity: 1,
-            background: 'rgba(17, 114, 182, 0.15)',
-            color: 'rgba(17, 114, 182, 0.15)',
-            border: '1.5px solid rgba(22, 142, 228, 0.15)',
-            zIndex: 1,
-            transform: 'rotate(0deg)',
-          }}
-        >
-          <div
-            style={{
+            transform: 'rotate(0deg)'
+          }}>My Orders</div>
+          {loading && <div style={{fontSize:20, color:'#007AFF'}}>Loading...</div>}
+          {error && <div style={{fontSize:18, color:'red'}}>{error}</div>}
+          {orders.length === 0 && !loading && !error && (
+            <div style={{fontSize:18, color:'#333'}}>No orders found.</div>
+          )}
+          {orders.map((order, idx) => (
+            <div key={order.id} style={{
               position: 'absolute',
-              top: '16px',
-              left: '22px',
-              width: '116px',
-              height: '23px',
-              opacity: 1,
+              top: `${237 + idx * 203}px`,
+              left: '223px',
+              width: '1190px',
+              height: '194px',
+              borderRadius: '10px',
+              background: 'rgba(17, 114, 182, 0.15)',
+              border: '1.5px solid #1172B626',
               fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            21/07/2025
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '953px',
-              width: '185px',
-              height: '23px',
+              color: '#000',
               opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '18px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Invoice no. - 124536
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '54px',
-              left: '22px',
-              width: '196px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Order ID - 1324565
-          </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: '116px',
-                left: '22px',
-                width: '196px',
-                height: '21px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontStyle: 'normal',
-                fontSize: '16px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.7)'
-              }}
-            >
-              Total amount - Rs 12,500
+              boxSizing: 'border-box',
+              zIndex: 2,
+              overflow: 'hidden',
+            }}>
+              {/* Date */}
+              <div style={{position:'absolute',top:'24px',left:'32px',fontSize:'18px',fontWeight:500}}>{order.date}</div>
+              {/* Invoice No. */}
+              <div style={{position:'absolute',top:'24px',left:'950px',fontSize:'18px',fontWeight:500}}>{`Invoice no. - ${order.invoiceNo}`}</div>
+              {/* Order ID */}
+              <div style={{position:'absolute',top:'60px',left:'32px',fontSize:'16px',fontWeight:500}}>{`Order ID - ${order.id}`}</div>
+              {/* Items */}
+              <div style={{position:'absolute',top:'90px',left:'32px',fontSize:'16px',color:'#222',fontWeight:400}}>{order.items && order.items.join(', ')}</div>
+              {/* Total Amount */}
+              <div style={{position:'absolute',top:'120px',left:'32px',fontSize:'16px',fontWeight:500}}>{`Total amount - Rs ${order.totalAmount}`}</div>
+              {/* Delivery Address */}
+              <div style={{position:'absolute',top:'150px',left:'32px',fontSize:'16px',width:'568px',fontWeight:400}}>{`Delivery address - ${order.address}`}</div>
+              {/* Progress line */}
+              <div style={{position:'absolute',top:'140px',left:'750px',width:'350px',height:'0px',border:'1.5px solid rgba(0,0,0,0.75)'}} />
+              {/* Status circles */}
+              {[0,1,2,3].map(i => (
+                <div key={i} style={{
+                  position:'absolute',
+                  top:`${140 - 10/2}px`,
+                  left:`${750 + (i * 350/3) - 10/2}px`,
+                  width:'10px',height:'10px',
+                  backgroundColor: i <= getStatusIndex(order.status) ? '#007AFF' : 'rgba(0,0,0,0.75)',
+                  borderRadius:'50%',
+                  opacity:1
+                }} />
+              ))}
+              {/* Status labels */}
+              <div style={{position:'absolute',top:'157px',left:`${750 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Order placed</div>
+              <div style={{position:'absolute',top:'157px',left:`${750 + (350/3) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Approval</div>
+              <div style={{position:'absolute',top:'157px',left:`${750 + (2*350/3) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Out for delivery</div>
+              <div style={{position:'absolute',top:'157px',left:`${750 + 350 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Delivered</div>
             </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: '147px',
-                left: '22px',
-                width: '568px',
-                height: '21px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontStyle: 'normal',
-                fontSize: '16px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.7)'
-              }}
-            >
-              Delivery address - 324, Sector 27, Gurugram, Haryana - 122002
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: '140.85px',
-                left: '741.92px',
-                width: '350.7691955566406px',
-                height: '0px',
-                opacity: 1,
-                borderWidth: '1.46px',
-                border: '1.46px solid rgba(0, 0, 0, 0.75)'
-              }}
-            />
-            {/* Four circles on the line: start, center-left, center-right, end */}
-            {/* Calculate exact positions for perfect alignment */}
-            <div
-              style={{
-                position: 'absolute',
-                top: `${140.85 - 10.23 / 2}px`,
-                left: `${741.92 - 10.23 / 2}px`,
-                width: '10.23px',
-                height: '10.23px',
-                opacity: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                borderRadius: '50%'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '157.8px',
-                left: `${741.92 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-                width: '93.73px',
-                height: '15.2px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 500,
-                fontStyle: 'normal',
-                fontSize: '12.67px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                textAlign: 'center',
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.75)'
-              }}
-            >
-              Order placed
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: `${140.85 - 10.23 / 2}px`,
-                left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2}px`,
-                width: '10.23px',
-                height: '10.23px',
-                opacity: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                borderRadius: '50%'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '157.8px',
-                left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-                width: '93.73px',
-                height: '15.2px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 500,
-                fontStyle: 'normal',
-                fontSize: '12.67px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                textAlign: 'center',
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.75)'
-              }}
-            >
-              Approval
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: `${140.85 - 10.23 / 2}px`,
-                left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2}px`,
-                width: '10.23px',
-                height: '10.23px',
-                opacity: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                borderRadius: '50%'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '157.8px',
-                left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-                width: '93.73px',
-                height: '15.2px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 500,
-                fontStyle: 'normal',
-                fontSize: '12.67px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                textAlign: 'center',
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.75)'
-              }}
-            >
-              Out for delivery
-            </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: `${140.85 - 10.23 / 2}px`,
-                left: `${741.92 + 350.7691955566406 - 10.23 / 2}px`,
-                width: '10.23px',
-                height: '10.23px',
-                opacity: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                borderRadius: '50%'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '157.8px',
-                left: `${741.92 + 350.7691955566406 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-                width: '93.73px',
-                height: '15.2px',
-                opacity: 1,
-                fontFamily: 'Poppins',
-                fontWeight: 500,
-                fontStyle: 'normal',
-                fontSize: '12.67px',
-                lineHeight: '150%',
-                letterSpacing: 0,
-                textAlign: 'center',
-                verticalAlign: 'middle',
-                color: 'rgba(0, 0, 0, 0.75)'
-              }}
-            >
-              Delivered
-            </div>
-        </div>
-        <main className="profile-scrollable" style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 120px)', overflow: 'auto'}}>
-          {/* Orders content goes here */}
+          ))}
         </main>
-        {/* New box with specified styles */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '440px',
-            left: '223px',
-            width: '1190px',
-            height: '194px',
-            borderRadius: '10px',
-            opacity: 1,
-            background: 'rgba(17, 114, 182, 0.15)',
-            transform: 'rotate(0deg)'
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '22px',
-              width: '116px',
-              height: '23px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            21/07/2025
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '85px',
-              left: '20px',
-              width: '510px',
-              height: '27px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              color: 'rgba(0, 0, 0, 1)'
-            }}
-          >
-            JK Copier Paper - 20 pc, Parker Beta Neo Metalic Blue - 100 pc
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '953px',
-              width: '185px',
-              height: '23px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '18px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Invoice no. - 124536
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '54px',
-              left: '22px',
-              width: '196px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Order ID - 1324565
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '116px',
-              left: '22px',
-              width: '196px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Total amount - Rs 12,500
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '147px',
-              left: '22px',
-              width: '568px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Delivery address - 324, Sector 27, Gurugram, Haryana - 122002
-          </div>
-          {/* Four circles and status labels for box 2 */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '140.85px',
-              left: '741.92px',
-              width: '350.7691955566406px',
-              height: '0px',
-              opacity: 1,
-              borderWidth: '1.46px',
-              border: '1.46px solid rgba(0, 0, 0, 0.75)'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Order placed
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Approval
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Out for delivery
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + 350.7691955566406 - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',   top: '157.8px',
-              left: `${741.92 + 350.7691955566406 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px', opacity: 1,   fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Delivered
-          </div>
-        </div>
-        {/* Date text */}
-        {/* Third box with specified styles */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '643px',
-            left: '223px',
-            width: '1190px',
-            height: '194px',
-            borderRadius: '10px',
-            opacity: 1,
-            background: 'rgba(17, 114, 182, 0.15)',
-            transform: 'rotate(0deg)'
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '22px',
-              width: '116px',
-              height: '23px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            21/07/2025
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '85px',
-              left: '20px',
-              width: '510px',
-              height: '27px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              color: 'rgba(0, 0, 0, 1)'
-            }}
-          >
-            JK Copier Paper - 20 pc, Parker Beta Neo Metalic Blue - 100 pc
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '953px',
-              width: '185px',
-              height: '23px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '18px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Invoice no. - 124536
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '54px',
-              left: '22px',
-              width: '196px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Order ID - 1324565
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '116px',
-              left: '22px',
-              width: '196px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Total amount - Rs 12,500
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '147px',
-              left: '22px',
-              width: '568px',
-              height: '21px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontStyle: 'normal',
-              fontSize: '16px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.7)'
-            }}
-          >
-            Delivery address - 324, Sector 27, Gurugram, Haryana - 122002
-          </div>
-          {/* Four circles and status labels for box 3 */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '140.85px',
-              left: '741.92px',
-              width: '350.7691955566406px',
-              height: '0px',
-              opacity: 1,
-              borderWidth: '1.46px',
-              border: '1.46px solid rgba(0, 0, 0, 0.75)'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Order placed
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 + (350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Approval
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 + (2 * 350.7691955566406 / 3) - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Out for delivery
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: `${140.85 - 10.23 / 2}px`,
-              left: `${741.92 + 350.7691955566406 - 10.23 / 2}px`,
-              width: '10.23px',
-              height: '10.23px',
-              opacity: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
-              borderRadius: '50%'
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: '157.8px',
-              left: `${741.92 + 350.7691955566406 - 10.23 / 2 - (93.73332977294922/2) + 10.23/2}px`,
-              width: '93.73px',
-              height: '15.2px',
-              opacity: 1,
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontStyle: 'normal',
-              fontSize: '12.67px',
-              lineHeight: '150%',
-              letterSpacing: 0,
-              textAlign: 'center',
-              verticalAlign: 'middle',
-              color: 'rgba(0, 0, 0, 0.75)'
-            }}
-          >
-            Delivered
-          </div>
-        </div>
       </div>
-      
     </div>
   );
 };
 
 export default Orders;
+      

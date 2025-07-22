@@ -28,7 +28,7 @@ function SignUp() {
 
   // Backend API endpoint 
 
-  const API_URL = 'http://10.10.2.109:5000/corporate';
+  const API_URL = 'http://10.10.0.218:5000/corporate';
 
   // Form submit handler
   const handleSubmit = async (e) => {
