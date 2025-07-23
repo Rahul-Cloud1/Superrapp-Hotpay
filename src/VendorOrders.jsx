@@ -14,11 +14,17 @@ function VendorOrders() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Replace with your actual orders API endpoint
-    fetch('http://10.10.0.218:5000/vendor/orders')
+    const token = localStorage.getItem('token');
+    fetch('http://10.10.0.218:5000/vendor/order', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
       .then(res => res.json())
       .then(data => {
-        setOrders(data.orders || []);
+        console.log('Fetched orders:', data);
+        setOrders(Array.isArray(data) ? data : data.orders || []);
         setLoading(false);
       })
       .catch(() => {
@@ -168,8 +174,198 @@ function VendorOrders() {
         </nav>
       </aside>
 
+      {/* Main content area: Dynamic Order Boxes */}
+      <main style={{ position: 'absolute', top: '120px', left: '190px', width: '1250px', height: '930px', padding: '40px 0', overflowY: 'auto' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', marginTop: '100px', fontSize: '24px', color: '#1172B6' }}>Loading orders...</div>
+        ) : error ? (
+          <div
+            style={{
+              width: '1190px',
+              height: '194px',
+              borderRadius: '10px',
+              background: '#d6e3ed',
+              position: 'relative',
+              top: '40px',
+              left: '24px',
+              opacity: 1,
+              boxShadow: '0 2px 8px #1172B626',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '16px 24px',
+              color: '#073250',
+              fontFamily: 'Poppins',
+              fontSize: '18px',
+              zIndex: 1,
+              position: 'relative'
+            }}
+          >
+            {/* Date label as per design, empty value */}
+            <div
+              style={{
+                width: '116px',
+                height: '23px',
+                position: 'absolute',
+                top: '16px',
+                left: '22px',
+                fontFamily: 'Poppins',
+                fontWeight: 400,
+                fontStyle: 'normal',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: '0%',
+                verticalAlign: 'middle',
+                color: '#000000B2',
+                opacity: 1,
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                zIndex: 2
+              }}
+            >
+              {/* Empty value */}
+            </div>
+            {/* Invoice number top right */}
+            <div style={{ position: 'absolute', top: '16px', right: '32px', fontSize: '16px', color: '#073250', fontWeight: 400 }}>
+              Invoice no. -
+            </div>
+            {/* Order ID and product list */}
+            <div style={{ fontWeight: 600, fontSize: '20px', marginTop: '40px', marginBottom: '4px' }}>
+              Order ID -
+            </div>
+            <div style={{ fontSize: '15px', color: '#073250', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {/* Empty value */}
+            </div>
+            {/* Total amount */}
+            <div style={{ fontSize: '15px', color: '#073250', marginBottom: '2px' }}>
+              Total amount - Rs
+            </div>
+            {/* Delivery address */}
+            <div style={{ fontSize: '15px', color: '#073250', marginBottom: '2px' }}>
+              Delivery address -
+            </div>
+            {/* Status bar */}
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '18px', marginLeft: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#222' }}></div>
+                  <span style={{ fontSize: '12px', color: '#222', marginTop: '4px' }}>Order placed</span>
+                </div>
+                <div style={{ width: '60px', height: '2px', background: '#222', marginTop: '-16px' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#222' }}></div>
+                  <span style={{ fontSize: '12px', color: '#222', marginTop: '4px' }}>Approval</span>
+                </div>
+                <div style={{ width: '60px', height: '2px', background: '#222', marginTop: '-16px' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#222' }}></div>
+                  <span style={{ fontSize: '12px', color: '#222', marginTop: '4px' }}>Out for delivery</span>
+                </div>
+                <div style={{ width: '60px', height: '2px', background: '#222', marginTop: '-16px' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#222' }}></div>
+                  <span style={{ fontSize: '12px', color: '#222', marginTop: '4px' }}>Delivered</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : orders.length === 0 ? (
+          <div
+            style={{
+              width: '1190px',
+              height: '194px',
+              borderRadius: '10px',
+              background: '#1172B626',
+              position: 'relative',
+              top: '40px',
+              left: '24px',
+              opacity: 1,
+              boxShadow: '0 2px 8px #1172B626',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '24px',
+              color: '#073250',
+              fontFamily: 'Poppins',
+              fontSize: '18px',
+              zIndex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative'
+            }}
+          >
+            {/* Date label as per design, empty for no orders */}
+            <div
+              style={{
+                width: '116px',
+                height: '23px',
+                position: 'absolute',
+                top: '16px',
+                left: '22px',
+                fontFamily: 'Poppins',
+                fontWeight: 400,
+                fontStyle: 'normal',
+                fontSize: '16px',
+                lineHeight: '150%',
+                letterSpacing: '0%',
+                verticalAlign: 'middle',
+                color: '#000000B2',
+                opacity: 1,
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                zIndex: 2
+              }}
+            >
+              {/* Empty date for no orders */}
+            </div>
+            <div style={{ fontWeight: 600, fontSize: '22px', marginBottom: '8px', color: '#1172B6', marginTop: '32px' }}>No Orders Found</div>
+            <div style={{ fontSize: '18px' }}>There are currently no orders to display.</div>
+          </div>
+        ) : (
+          [...orders].reverse().map((order, idx) => (
+            <div
+              key={order.orderId || idx}
+              style={{
+                width: '1190px',
+                minHeight: '120px',
+                borderRadius: '10px',
+                background: '#d6e3ed',
+                position: 'relative',
+                top: `${40 + idx * 140}px`,
+                left: '24px',
+                opacity: 1,
+                boxShadow: '0 2px 8px #1172B626',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '16px 24px',
+                color: '#073250',
+                fontFamily: 'Poppins',
+                fontSize: '18px',
+                zIndex: 1,
+                marginBottom: '16px',
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: '20px', marginBottom: '8px' }}>
+                Order ID: {order.orderId}
+              </div>
+              <div style={{ fontSize: '16px', marginBottom: '4px' }}>
+                Name: {order.name}
+              </div>
+              <div style={{ fontSize: '16px', marginBottom: '4px' }}>
+                Quantity: {order.quantity}
+              </div>
+              <div style={{ fontSize: '16px', marginBottom: '4px' }}>
+                Created At: {order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}
+              </div>
+            </div>
+          ))
+        )}
+      </main>
     </div>
   );
 }
+
 
 export default VendorOrders;

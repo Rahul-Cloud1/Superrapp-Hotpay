@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import logo from './assets/image 3.png';
 import profileIcon from './assets/profileicon.png';
 import orderIcon from './assets/ordericon.png';
@@ -14,8 +14,8 @@ function VendorApprovals() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); 
-    fetch('http://10.10.0.218:5000/order/request', {
+    const token = localStorage.getItem('token');
+    fetch('http://10.10.0.218:5000/vendor/order/request', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -23,7 +23,19 @@ function VendorApprovals() {
     })
       .then(res => res.json())
       .then(data => {
-        setApprovals(data.approvals || []);
+        if (data && typeof data === 'object' && data.message === 'No Order Request found!') {
+          setApprovals([]);
+          setError('No order requests found');
+        } else if (Array.isArray(data)) {
+          setApprovals(data);
+          setError('');
+        } else if (Array.isArray(data.approvals)) {
+          setApprovals(data.approvals);
+          setError('');
+        } else {
+          setApprovals([]);
+          setError('No approvals found');
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -32,9 +44,61 @@ function VendorApprovals() {
       });
   }, []);
 
+  const handleApprove = async (vendorOrderFlowId) => {
+    const token = localStorage.getItem('token');
+    const approval = approvals.find(a => a._id === vendorOrderFlowId);
+    if (!approval) return setError('Approval not found');
+    try {
+      const res = await fetch('http://10.10.0.218:5000/vendor/order/request', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          orderId: approval.orderId,
+          vendorOrderFlowId: approval.vendorOrderFlowId,
+          status: 'accept'
+        })
+      });
+      const data = await res.json();
+      if (data && (data.success || data.status === 'accepted')) {
+        setApprovals(prev => prev.map(a => a._id === vendorOrderFlowId ? { ...a, status: 'accepted' } : a));
+      }
+    } catch (err) {
+      setError('Failed to approve request');
+    }
+  };
+
+  const handleReject = async (vendorOrderFlowId) => {
+    const token = localStorage.getItem('token');
+    const approval = approvals.find(a => a._id === vendorOrderFlowId);
+    if (!approval) return setError('Approval not found');
+    try {
+      const res = await fetch('http://10.10.0.218:5000/vendor/order/request', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          orderId: approval.orderId,
+          vendorOrderFlowId: approval._id,
+          status: 'rejected'
+        })
+      });
+      const data = await res.json();
+      if (data && (data.success || data.status === 'rejected')) {
+        setApprovals(prev => prev.map(a => a._id === vendorOrderFlowId ? { ...a, status: 'rejected' } : a));
+      }
+    } catch (err) {
+      setError('Failed to reject request');
+    }
+  };
+
   return (
     <div style={{ width: '1440px', height: '1050px', background: '#F5F3F3', position: 'relative' }}>
-      {/* Header  */}
+      {/* Header */}
       <header style={{
         width: '1440px',
         height: '120px',
@@ -105,7 +169,7 @@ function VendorApprovals() {
         </span>
       </header>
 
-      {/* Sidebar (copied from vendordashboard.jsx) */}
+      {/* Sidebar */}
       <aside style={{
         width: '190px',
         height: '924px',
@@ -121,49 +185,49 @@ function VendorApprovals() {
         zIndex: 99
       }}>
         <nav style={{ position: 'relative', width: '100%', height: '100%' }}>
-          {/* Profile icon and label */}
+          {/* Sidebar Items */}
           <div style={{ position: 'absolute', top: 31, left: 23, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => { window.location.href = '/vendordashboard'; }}>
             <span style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={profileIcon} alt="Profile" style={{ width: 25, height: 25 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15 }}>My Profile</span>
           </div>
-          {/* Orders icon and label */}
+
           <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => { window.location.href = '/vendororders'; }}>
             <span style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={orderIcon} alt="Orders" style={{ width: 25, height: 25 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13 }}>Orders</span>
           </div>
-          {/* Wallet icon and label */}
+
           <div style={{ position: 'absolute', top: 163, left: 23, display: 'flex', alignItems: 'center' }}>
             <span style={{ width: 19.8, height: 18.75, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={walletIcon} alt="Wallet" style={{ width: 19.8, height: 18.75 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15 }}>Catalog</span>
           </div>
-          {/* Support icon and label */}
+
           <div style={{ position: 'absolute', top: 226, left: 23, display: 'flex', alignItems: 'center' }}>
             <span style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={supportIcon} alt="Support" style={{ width: 25, height: 25 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 14 }}>Support</span>
           </div>
-          {/* Approval icon and label */}
+
           <div style={{ position: 'absolute', top: 291, left: 26, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => { window.location.href = '/vendorapprovals'; }}>
             <span style={{ width: 18.75, height: 20.83, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={approvalIcon} alt="Approval" style={{ width: 18.75, height: 20.83 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 15 }}>Approvals</span>
           </div>
-          {/* Invoice icon and label */}
+
           <div style={{ position: 'absolute', top: 351.83, left: 23, display: 'flex', alignItems: 'center' }}>
             <span style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={invoiceIcon} alt="Invoice" style={{ width: 25, height: 25 }} />
             </span>
             <span style={{ color: '#111', fontFamily: 'Poppins', fontSize: 13 }}>Invoices</span>
           </div>
-          {/* Logout icon and label */}
+
           <div style={{ position: 'absolute', top: 416.83, left: 26, display: 'flex', alignItems: 'center' }}>
             <span style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={logoutIcon} alt="Logout" style={{ width: 20, height: 20 }} />
@@ -173,14 +237,13 @@ function VendorApprovals() {
         </nav>
       </aside>
 
-      {/* Main content area for dynamic approval boxes */}
+      {/* Main Content */}
       <div style={{
         position: 'fixed',
-        top: '210px', // directly below header
+        top: '210px',
         left: '227px',
         width: '1180px',
-        height: '930px', // 1050px total - 120px header
-        minHeight: '243px',
+        height: '930px',
         paddingBottom: '40px',
         background: 'transparent',
         display: 'flex',
@@ -188,66 +251,31 @@ function VendorApprovals() {
         marginTop: 0,
         zIndex: 10
       }}>
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'relative',
-            overflow: 'hidden', // No scrolling
-          }}
-        >
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          {/* Approval Cards or Empty/Error UI */}
           {loading ? (
             <div style={{ fontFamily: 'Poppins', fontSize: '20px', color: '#1172B6', textAlign: 'center', marginTop: '80px' }}>Loading approvals...</div>
-          ) : error ? (
-            <div style={{ width: '1150px', height: '243px', background: '#1172B626', borderRadius: '15px', opacity: 1, marginBottom: '30px', boxShadow: '0 2px 8px rgba(17, 114, 182, 0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '32px 40px', position: 'relative', transform: 'rotate(0deg)' }}>
-              {/* No data shown in error box */}
-            </div>
-          ) : approvals.length === 0 ? (
-            <div style={{ width: '1190px', height: '243px', background: '#1172B626', borderRadius: '15px', opacity: 1, marginBottom: '30px', boxShadow: '0 2px 8px rgba(17, 114, 182, 0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '32px 40px', position: 'relative', transform: 'rotate(0deg)' }}>
-              {/* No data shown in empty box */}
-            </div>
           ) : (
-            approvals
-              .slice()
-              .sort((a, b) => new Date(b.date) - new Date(a.date)) // latest first
-              .map((approval, idx) => (
-                idx < 10 ? (
-                  <div
-                    key={idx}
-                    style={{
-                      width: '1190px',
-                      height: '243px',
-                      background: '#1172B626',
-                      borderRadius: '15px',
-                      opacity: 1,
-                      marginBottom: '30px',
-                      boxShadow: '0 2px 8px rgba(17, 114, 182, 0.08)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      padding: '32px 40px',
-                      position: 'relative',
-                      transform: 'rotate(0deg)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
-                      <div style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: '22px', color: '#073250' }}>
-                        Product Name: {approval.name || 'N/A'}
-                      </div>
-                      <div style={{ fontFamily: 'Poppins', fontSize: '18px', color: '#073250' }}>
-                        Quantity: {approval.quantity || 'N/A'}
-                      </div>
-                      <div style={{ fontFamily: 'Poppins', fontSize: '18px', color: approval.status === 'approved' ? '#1172B6' : 'red', background: '#fff', borderRadius: '8px', padding: '8px 18px', boxShadow: '0 1px 4px #1172B626', whiteSpace: 'nowrap', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginRight: '40px', marginTop: '0px' }}>
-                        Status: {approval.status || 'N/A'}
-                      </div>
-                      <div style={{ fontFamily: 'Poppins', fontSize: '18px', color: '#073250' }}>
-                        Date: {approval.createdAt || 'N/A'}
-                      </div>
+            <div style={{ fontFamily: 'Poppins', padding: '20px', textAlign: 'center', color: '#073250' }}>
+              {/* Map or Error already handled in your long version above, include your dynamic approval cards here */}
+              {error || approvals.length === 0 ? (
+                <div>{error || 'No approvals found'}</div>
+              ) : (
+                approvals.map((approval, idx) => (
+                  <div key={idx} style={{ marginBottom: '16px', background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>
+                    <h3>Product Name: {approval.name}</h3>
+                    <p>Status: {approval.status}</p>
+                    <p>Quantity: {approval.quantity}</p>
+                    <p>Date: {new Date(approval.createdAt).toLocaleDateString()}</p>
+                    <div style={{ marginTop: '10px' }}>
+                      <button onClick={() => handleApprove(approval._id)} style={{ marginRight: '12px' }}>Approve</button>
+                      <button onClick={() => handleReject(approval._id)}>Reject</button>
                     </div>
                   </div>
-                ) : null
-              ))
-            )}
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
