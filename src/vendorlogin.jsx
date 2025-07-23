@@ -1,26 +1,12 @@
 
-// API endpoints
-const SEND_OTP_API = 'http://192.168.1.4:5000/auth/login/vendor';
+// API endpoint
+const LOGIN_API = 'http://10.10.0.218:5000/auth/login/vendor';
 
-
-async function sendOTP(email) {
-  const response = await fetch(SEND_OTP_API, {
-    method: 'POST',
-
-    
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-  return response;
-}
-// API endpoints
-const VERIFY_OTP_API = 'http://192.168.1.4:5000/auth/login/vendor';
-
-async function verifyOTP(email, otpValue) {
-  const response = await fetch(VERIFY_OTP_API, {
+async function loginVendor(email, password) {
+  const response = await fetch(LOGIN_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, otp: otpValue }),
+    body: JSON.stringify({ email, password }),
   });
   return response;
 }
@@ -33,12 +19,10 @@ import applink from './assets/applink.png';
 
 function vendorlogin() {
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '']);
-  const [showOTP, setShowOTP] = useState(false);
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
-  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
   const navigate = useNavigate();
 
   return (
@@ -400,133 +384,87 @@ function vendorlogin() {
           borderTop: '1.1px solid rgba(0, 0, 0, 0.55)',
           borderWidth: '1.1px 0 0 0'
         }}></div>
+
+        {/* Password Input Field */}
+        <div style={{
+          width: '90px',
+          height: '30px',
+          position: 'absolute',
+          top: '313px',
+          left: '65px',
+          transform: 'rotate(0deg)',
+          opacity: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'Poppins',
+          fontWeight: 500,
+          fontSize: '19px',
+          lineHeight: '100%',
+          letterSpacing: '0%',
+          textAlign: 'center',
+          color: '#000000ff'
+        }}>Password</div>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{
+            width: '320px',
+            height: '40px',
+            position: 'absolute',
+            top: '340px',
+            left: '71px',
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontFamily: 'Poppins',
+            fontSize: '16px',
+            color: '#333'
+          }}
+          placeholder="Enter your password"
+          required
+        />
+        {/* Line 2 */}
+        <div style={{
+          width: '280.56px',
+          height: '0px',
+          position: 'absolute',
+          top: '370.2px',
+          left: '70.67px',
+          transform: 'rotate(0deg)',
+          opacity: 1,
+          borderTop: '1.1px solid rgba(0, 0, 0, 0.55)',
+          borderWidth: '1.1px 0 0 0'
+        }}></div>
         
-        {/* OTP Section - Only show when email is entered */}
-        {showOTP && (
-          <>
-            <div style={{
-              width: '94px',
-              height: '30px',
-              position: 'absolute',
-              top: '313px',
-              left: '65px',
-              transform: 'rotate(0deg)',
-              opacity: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'Poppins',
-              fontWeight: 500,
-              fontSize: '19.75px',
-              lineHeight: '100%',
-              letterSpacing: '0%',
-              textAlign: 'center',
-              color: '#000000ff'
-            }}>Enter OTP</div>
-            {/* OTP Inputs */}
-            <div style={{
-              display: 'flex',
-              gap: '10px',
-              position: 'absolute',
-              top: '349px',
-              left: '72px',
-            }}>
-              {otp.map((digit, idx) => (
-                <input
-                  key={idx}
-                  ref={otpRefs[idx]}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={e => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    if (!val) return;
-                    const newOtp = [...otp];
-                    newOtp[idx] = val;
-                    setOtp(newOtp);
-                    if (val && idx < 4) {
-                      otpRefs[idx + 1].current.focus();
-                    }
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Backspace') {
-                      if (otp[idx]) {
-                        const newOtp = [...otp];
-                        newOtp[idx] = '';
-                        setOtp(newOtp);
-                      } else if (idx > 0) {
-                        otpRefs[idx - 1].current.focus();
-                      }
-                    }
-                  }}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    fontFamily: 'Poppins',
-                    fontSize: '22px',
-                    color: '#333',
-                    background: 'white',
-                    textAlign: 'center',
-                  }}
-                  placeholder="-"
-                />
-              ))}
-            </div>
-          </>
-        )}
-        
-        {/* Sign in/Send OTP Button */}
+        {/* Sign in Button */}
         <div
           onClick={async () => {
             if (loading) return;
             setError('');
-            if (!showOTP) {
-              // Send OTP
-              if (email.trim() === '' || !email.includes('@')) {
-                setError('Please enter a valid email.');
-                return;
+            if (email.trim() === '' || !email.includes('@')) {
+              setError('Please enter a valid email.');
+              return;
+            }
+            if (password.trim() === '') {
+              setError('Please enter your password.');
+              return;
+            }
+            setLoading(true);
+            try {
+              const response = await loginVendor(email, password);
+              if (!response.ok) throw new Error('Invalid email or password');
+              const data = await response.json();
+              if (data.token) {
+                localStorage.setItem('token', data.token);
               }
-              setLoading(true);
-              try {
-                const response = await sendOTP(email);
-                if (!response.ok) throw new Error('Failed to send OTP');
-                setShowOTP(true);
-
-                // for Testing
-                console.log('response', await response.json());
-                // g
-                setInfo('OTP sent to your email.');
-              } catch (err) {
-                setError(err.message || 'Error sending OTP');
-              } finally {
-                setLoading(false);
-              }
-            } else {
-              // Verify OTP
-              const otpValue = otp.join('');
-              if (otpValue.length < 5) {
-                setError('Please enter the 5-digit OTP.');
-                return;
-              }
-              setLoading(true);
-              try {
-                const response = await verifyOTP(email, otpValue);
-                if (!response.ok) throw new Error('Invalid OTP');
-                // Parse token from response and save to localStorage
-                const data = await response.json();
-                if (data.token) {
-                  localStorage.setItem('token', data.token);
-                }
-                setInfo('Login successful!');
-                setTimeout(() => navigate('/vendordashboard'), 1200);
-              } catch (err) {
-                setError(err.message || 'Login failed');
-              } finally {
-                setLoading(false);
-              }
+              setInfo('Login successful!');
+              setTimeout(() => navigate('/vendordashboard'), 1200);
+            } catch (err) {
+              setError(err.message || 'Login failed');
+            } finally {
+              setLoading(false);
             }
           }}
           style={{
@@ -553,7 +491,7 @@ function vendorlogin() {
             fontSize: '18px',
             color: 'white',
             textAlign: 'center'
-          }}>{loading ? 'Please wait...' : showOTP ? 'Sign in' : 'Send OTP'}</span>
+          }}>{loading ? 'Please wait...' : 'Sign in'}</span>
         </div>
         {/* Info message */}
         {info && !error && (

@@ -12,9 +12,18 @@ function VendorDashboard() {
   const [vendor, setVendor] = useState(null);
   const [warehouseAddresses, setWarehouseAddresses] = useState([]);
   const [billingAddresses, setBillingAddresses] = useState([]);
+  const [showWarehouseForm, setShowWarehouseForm] = useState(false);
+  const [showBillingForm, setShowBillingForm] = useState(false);
+  const [newWarehouseAddress, setNewWarehouseAddress] = useState('');
+  const [newBillingAddress, setNewBillingAddress] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://192.168.1.4:5000/vendor')
+    const token = localStorage.getItem('token');
+    fetch('http://10.10.0.218:5000/vendor/profile', {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
       .then(res => res.json())
       .then(data => {
         setVendor(data);
@@ -28,10 +37,56 @@ function VendorDashboard() {
       });
   }, []);
 
+  // Add new delivery address
+  const handleAddWarehouseAddress = async (e) => {
+    e.preventDefault();
+    if (!newWarehouseAddress.trim()) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('http://10.10.0.218:5000/vendor/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: newWarehouseAddress })
+      });
+      if (!res.ok) throw new Error('Failed to add address');
+      setWarehouseAddresses(prev => [...prev, newWarehouseAddress]);
+      setNewWarehouseAddress('');
+      setShowWarehouseForm(false);
+    } catch (err) {
+      setError(err.message || 'Error adding address');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new billing address
+  const handleAddBillingAddress = async (e) => {
+    e.preventDefault();
+    if (!newBillingAddress.trim()) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('http://10.10.0.218:5000/vendor/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: newBillingAddress })
+      });
+      if (!res.ok) throw new Error('Failed to add address');
+      setBillingAddresses(prev => [...prev, newBillingAddress]);
+      setNewBillingAddress('');
+      setShowBillingForm(false);
+    } catch (err) {
+      setError(err.message || 'Error adding address');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{
       width: '1440px',
-      height: '900px',
+      height: '1050px', 
       transform: 'rotate(0deg)',
       opacity: 1,
       background: '#F5F3F3',
@@ -65,7 +120,7 @@ function VendorDashboard() {
           }}
         />
         <div style={{
-          width: '452px',
+          width: '450px',
           height: '62px',
           position: 'absolute',
           top: '34px',
@@ -87,10 +142,10 @@ function VendorDashboard() {
         </div>
       {/* Billing Address Box */}
       <div style={{
-        width: '1190px',
+        width: '1140px',
         minHeight: '94px',
         position: 'absolute',
-        top: '513px',
+        top: showWarehouseForm ? '680px' : '580px', // Shift down only if warehouse form is open
         left: '227px',
         borderRadius: '15px',
         background: '#1172B626',
@@ -103,13 +158,13 @@ function VendorDashboard() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        padding: '24px 32px',
+        padding: '20px 32px',
       }}>
         <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
           <span style={{ fontWeight: 600, fontSize: '22px', color: '#073250' }}>Billing address</span>
           <button style={{
             marginLeft: 'auto',
-            padding: '10px 24px',
+            padding: '10px 20px',
             borderRadius: '8px',
             background: 'linear-gradient(90deg, #073250 0%, #1172B6 100%)',
             color: '#fff',
@@ -118,22 +173,37 @@ function VendorDashboard() {
             border: 'none',
             cursor: 'pointer',
             boxShadow: '0px 2px 8px 0px #0000001A',
-          }}>Add new billing address</button>
+          }} onClick={() => setShowBillingForm(true)}>Add new billing address</button>
         </div>
-        {/* Dynamic billing addresses */}
-        {billingAddresses.length === 0 ? (
-          <div style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>No billing addresses found.</div>
-        ) : (
-          billingAddresses.map((addr, idx) => (
-            <div key={idx} style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
-              {addr}
-            </div>
-          ))
+        <div style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
+          <strong>:</strong> <span style={{ fontWeight: 600 }}>{vendor?.billingAddress || ''}</span>
+        </div>
+        {/* Add new billing address form */}
+        {showBillingForm && (
+          <form onSubmit={handleAddBillingAddress} style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={newBillingAddress}
+              onChange={e => setNewBillingAddress(e.target.value)}
+              placeholder="Enter new billing address"
+              style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #1172B6', fontSize: '16px', background: '#fff', color: '#000' }}
+              required
+            />
+            <button type="submit" style={{ padding: '4px 10px', borderRadius: '5px', background: '#1172B6', color: '#fff', border: 'none', fontWeight: 500, fontSize: '14px' }}>Save</button>
+            <button type="button" style={{ padding: '4px 8px', borderRadius: '5px', background: '#ccc', color: '#333', border: 'none', fontSize: '14px' }} onClick={() => { setShowBillingForm(false); setNewBillingAddress(''); }}>Cancel</button>
+          </form>
         )}
+        {/* Dynamic billing addresses */}
+        {billingAddresses.map((addr, idx) => (
+          <div key={idx} style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
+            {addr}
+          </div>
+        ))}
+        {error && <div style={{ color: 'red', marginTop: '8px' }}>{error}</div>}
       </div>
       {/* Warehouse Box */}
       <div style={{
-        width: '1190px',
+        width: '1140px',
         minHeight: '94px',
         position: 'absolute',
         top: '401px',
@@ -164,18 +234,33 @@ function VendorDashboard() {
             border: 'none',
             cursor: 'pointer',
             boxShadow: '0px 2px 8px 0px #0000001A',
-          }}>Add new delivery address</button>
+          }} onClick={() => setShowWarehouseForm(true)}>Add new delivery address</button>
         </div>
-        {/* Dynamic warehouse addresses */}
-        {warehouseAddresses.length === 0 ? (
-          <div style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>No delivery addresses found.</div>
-        ) : (
-          warehouseAddresses.map((addr, idx) => (
-            <div key={idx} style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
-              {addr}
-            </div>
-          ))
+        <div style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
+          <strong>:</strong> <span style={{ fontWeight: 600 }}>{vendor?.warehouseAddress || ''}</span>
+        </div>
+        {/* Add new delivery address form */}
+        {showWarehouseForm && (
+          <form onSubmit={handleAddWarehouseAddress} style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={newWarehouseAddress}
+              onChange={e => setNewWarehouseAddress(e.target.value)}
+              placeholder="Enter new delivery address"
+              style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #1172B6', fontSize: '16px', background: '#fff', color: '#000' }}
+              required
+            />
+            <button type="submit" style={{ padding: '4px 10px', borderRadius: '5px', background: '#1172B6', color: '#fff', border: 'none', fontWeight: 500, fontSize: '14px' }}>Save</button>
+            <button type="button" style={{ padding: '4px 8px', borderRadius: '5px', background: '#ccc', color: '#333', border: 'none', fontSize: '14px' }} onClick={() => { setShowWarehouseForm(false); setNewWarehouseAddress(''); }}>Cancel</button>
+          </form>
         )}
+        {/* Dynamic warehouse addresses */}
+        {warehouseAddresses.map((addr, idx) => (
+          <div key={idx} style={{ color: '#073250', fontSize: '16px', marginTop: '8px' }}>
+            {addr}
+          </div>
+        ))}
+        {error && <div style={{ color: 'red', marginTop: '8px' }}>{error}</div>}
       </div>
         <img
           src={profileIcon}
@@ -220,7 +305,7 @@ function VendorDashboard() {
       </header>
       {/* Sidebar inlined from Sidebar.jsx */}
       <aside style={{
-        width: '210px',
+        width: '190px',
         height: '924px',
         position: 'fixed',
         top: '120px',
@@ -243,7 +328,7 @@ function VendorDashboard() {
           </div>
 
           {/* Orders icon and label */}
-          <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center' }}>
+          <div style={{ position: 'absolute', top: 96, left: 23, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => { window.location.href = '/vendororders'; }}>
             <span style={{ width: 25, height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={orderIcon} alt="Orders" style={{ width: 25, height: 25 }} />
             </span>
@@ -267,7 +352,7 @@ function VendorDashboard() {
           </div>
 
           {/* Approval icon and label */}
-          <div style={{ position: 'absolute', top: 291, left: 26, display: 'flex', alignItems: 'center' }}>
+          <div style={{ position: 'absolute', top: 291, left: 26, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => { window.location.href = '/vendorapprovals'; }}>
             <span style={{ width: 18.75, height: 20.83, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <img src={approvalIcon} alt="Approval" style={{ width: 18.75, height: 20.83 }} />
             </span>
@@ -294,7 +379,7 @@ function VendorDashboard() {
 
       {/* My Profile Box */}
       <div style={{
-        width: '1190px',
+        width: '1200px',
         height: '243px',
         position: 'absolute',
         top: '140px',
@@ -312,7 +397,7 @@ function VendorDashboard() {
         alignItems: 'flex-start',
       }}>
         <div style={{
-          width: '1190px',
+          width: '1170px',
           height: '44px',
           borderTopLeftRadius: '15px',
           borderTopRightRadius: '15px',
@@ -347,14 +432,15 @@ function VendorDashboard() {
           flexDirection: 'column',
           justifyContent: 'flex-start',
         }}>
-        <div>Vendor Name: <span style={{ fontWeight: 400 }}>{vendor?.name || ''}</span></div>
+        <div>Vendor Name: <span style={{ fontWeight: 400 }}>{vendor?.legelName || ''}</span></div>
         <div>Employee Count: <span style={{ fontWeight: 400 }}>{vendor?.employeeCount || ''}</span></div>
         <div>GSTIN: <span style={{ fontWeight: 400 }}>{vendor?.gstin || ''}</span></div>
-        <div>Contact: <span style={{ fontWeight: 400 }}>{vendor?.contact || ''}</span></div>
-        <div>Email ID: <span style={{ fontWeight: 400 }}>{vendor?.email || ''}</span></div>
+        <div>Contact: <span style={{ fontWeight: 400 }}>{vendor?.spocContact || ''}</span></div>
+        <div>Email ID: <span style={{ fontWeight: 400 }}>{vendor?.spocEmail || ''}</span></div>
         <div>Category: <span style={{ fontWeight: 400 }}>{vendor?.category || ''}</span></div>
         </div>
       </div>
+
     </div>
   );
 }

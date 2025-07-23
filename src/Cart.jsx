@@ -162,7 +162,7 @@ const Cart = () => {
       return;
     }
     try {
-      const res = await fetch('http://192.168.1.4:5000/cart', {
+      const res = await fetch('http://10.10.0.218:5000/cart', {
         method: 'POST', // or 'PUT' if your backend expects it
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ const Cart = () => {
         console.warn('Missing fields in cart items:', missingFields);
         return;
       }
-      const res = await fetch('http://192.168.1.4:5000/cart', {
+      const res = await fetch('http://10.10.0.218:5000/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -348,7 +348,7 @@ const Cart = () => {
       return;
     }
     try {
-      const res = await fetch('http://192.168.1.4:5000/approval', {
+      const res = await fetch('http://10.10.0.218:5000/approval', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -388,7 +388,7 @@ const Cart = () => {
       return;
     }
     try {
-      const res = await fetch('http://192.168.1.4:5000/cart', {
+      const res = await fetch('http://10.10.0.218:5000/cart', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

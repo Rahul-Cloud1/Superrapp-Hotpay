@@ -168,13 +168,29 @@ const Orders = () => {
         if (token) {
           document.cookie = `token=${token}; path=/`;
         }
-        const res = await fetch('http://192.168.1.4:5000/order', {
+        const res = await fetch('http://10.10.0.218:5000/order', {
           method: 'GET',
-          credentials: 'include',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });
         if (!res.ok) throw new Error('Failed to fetch orders');
         const data = await res.json();
-        setOrders(Array.isArray(data) ? data : []);
+        // Map API response to required fields for display
+        const mappedOrders = Array.isArray(data) ? data.map(order => ({
+          date: order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '',
+          id: order.orderId || '',
+          items: Array.isArray(order.items)
+            ? order.items.map(item => {
+                const name = item.name || '';
+                const quantity = item.quantity !== undefined ? item.quantity : '';
+                return name ? `${name} (Qty: ${quantity})` : '';
+              }).filter(Boolean)
+            : [],
+          totalAmount: order.totalAmount || '',
+          address: order.deliveryAddress || '',
+          invoiceNo: order.invoiceNo || '',
+          status: order.status || '',
+        })) : [];
+        setOrders(mappedOrders);
       } catch (err) {
         setError(err.message || 'Error fetching orders');
       } finally {
@@ -186,12 +202,11 @@ const Orders = () => {
 
   // Helper for progress line status
   const getStatusIndex = (status) => {
-    // status: 'placed', 'approved', 'out_for_delivery', 'delivered'
+    // status: 'placed', 'out_for_delivery', 'delivered'
     switch (status) {
       case 'placed': return 0;
-      case 'approved': return 1;
-      case 'out_for_delivery': return 2;
-      case 'delivered': return 3;
+      case 'out_for_delivery': return 1;
+      case 'delivered': return 2;
       default: return 0;
     }
   };
@@ -312,9 +327,9 @@ const Orders = () => {
               {/* Date */}
               <div style={{position:'absolute',top:'24px',left:'32px',fontSize:'18px',fontWeight:500}}>{order.date}</div>
               {/* Invoice No. */}
-              <div style={{position:'absolute',top:'24px',left:'950px',fontSize:'18px',fontWeight:500}}>{`Invoice no. - ${order.invoiceNo}`}</div>
+              {/* <div style={{position:'absolute',top:'24px',left:'950px',fontSize:'18px',fontWeight:500}}>{`Invoice no. - ${order.invoiceNo}`}</div> */}
               {/* Order ID */}
-              <div style={{position:'absolute',top:'60px',left:'32px',fontSize:'16px',fontWeight:500}}>{`Order ID - ${order.id}`}</div>
+              <div style={{position:'absolute',top:'60px',left:'32px',fontSize:'16px',fontWeight:800}}>{`Order ID - ${order.id}`}</div>
               {/* Items */}
               <div style={{position:'absolute',top:'90px',left:'32px',fontSize:'16px',color:'#222',fontWeight:400}}>{order.items && order.items.join(', ')}</div>
               {/* Total Amount */}
@@ -323,22 +338,21 @@ const Orders = () => {
               <div style={{position:'absolute',top:'150px',left:'32px',fontSize:'16px',width:'568px',fontWeight:400}}>{`Delivery address - ${order.address}`}</div>
               {/* Progress line */}
               <div style={{position:'absolute',top:'140px',left:'750px',width:'350px',height:'0px',border:'1.5px solid rgba(0,0,0,0.75)'}} />
-              {/* Status circles */}
-              {[0,1,2,3].map(i => (
+              {/* Status circles: only 3 (Order placed, Out for delivery, Delivered) */}
+              {[0,1,2].map(i => (
                 <div key={i} style={{
                   position:'absolute',
                   top:`${140 - 10/2}px`,
-                  left:`${750 + (i * 350/3) - 10/2}px`,
+                  left:`${750 + (i * 350/2) - 10/2}px`,
                   width:'10px',height:'10px',
-                  backgroundColor: i <= getStatusIndex(order.status) ? '#007AFF' : 'rgba(0,0,0,0.75)',
+                  backgroundColor: i <= getStatusIndex(order.status) ? '#28a745' : 'rgba(0,0,0,0.75)', // green
                   borderRadius:'50%',
                   opacity:1
                 }} />
               ))}
-              {/* Status labels */}
+              {/* Status labels: only 3 */}
               <div style={{position:'absolute',top:'157px',left:`${750 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Order placed</div>
-              <div style={{position:'absolute',top:'157px',left:`${750 + (350/3) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Approval</div>
-              <div style={{position:'absolute',top:'157px',left:`${750 + (2*350/3) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Out for delivery</div>
+              <div style={{position:'absolute',top:'157px',left:`${750 + (350/2) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Out for delivery</div>
               <div style={{position:'absolute',top:'157px',left:`${750 + 350 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Delivered</div>
             </div>
           ))}

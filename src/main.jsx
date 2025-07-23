@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import VendorOrders from './VendorOrders.jsx'
+import VendorApprovals from './VendorApprovals.jsx'
 import SignUp from './SignUp.jsx'
 import Login from './Login.jsx'
 import Profile from './Profile.jsx'
@@ -41,6 +43,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/vendorlogin" element={<Vendorlogin />} />
         <Route path="/vendordashboard" element={<VendorDashboard />} />
+        <Route path="/vendororders" element={<VendorOrders />} />
+        <Route path="/vendorapprovals" element={<VendorApprovals />} />
        
          {/* Redirect root path to login */}
         

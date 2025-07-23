@@ -205,7 +205,7 @@ const Products = () => {
   const updateCartQuantity = async (productId, variantId, qty) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://192.168.1.4:5000/cart', {
+      const res = await fetch('http://10.10.0.218:5000/cart', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ const Products = () => {
   // Fetch cart data
   const fetchCart = async () => {
     try {
-      const res = await fetch('http://192.168.1.4:5000/cart');
+      const res = await fetch('http://10.10.0.218:5000/cart');
       if (res.ok) {
         const data = await res.json();
         return data;
@@ -243,7 +243,7 @@ const Products = () => {
     const cartData = await fetchCart();
     // Replace with your approval endpoint and payload
     try {
-      const res = await fetch('http://192.168.1.4:5000/approval', {
+      const res = await fetch('http://10.10.0.218:5000/approval', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -270,7 +270,7 @@ const Products = () => {
     const allSubcategories = categoriesData.flatMap(cat => cat.subcategories);
     Promise.all(
       allSubcategories.map(subcat =>
-        fetch(`http://192.168.1.4:5000/product?category=${encodeURIComponent(subcat)}`)
+        fetch(`http://10.10.0.218:5000/product?category=${encodeURIComponent(subcat)}`)
           .then(res => res.json())
           .catch(() => [])
       )
@@ -726,7 +726,7 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                   return;
                 }
                 try {
-                  const res = await fetch('http://192.168.1.4:5000/cart', {
+                  const res = await fetch('http://10.10.0.218:5000/cart', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',

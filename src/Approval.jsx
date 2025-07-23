@@ -195,7 +195,7 @@ const Approval = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://192.168.1.4:5000/approval', {
+        const res = await fetch('http://10.10.0.218:5000/approval', {
           method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });
@@ -245,74 +245,36 @@ const Approval = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      if (action === 'approve') {
+      if (action === 'approve' || action === 'reject') {
         // Find the approval data for this id
         const approvalToStore = approvals.find(a => a.id === id);
         if (approvalToStore) {
-          // Build payload for /order endpoint as per backend schema
-          // Ensure corporateId is always a valid ObjectId string
-          let corporateId = '';
-          if (approvalToStore.corporateId) {
-            if (typeof approvalToStore.corporateId === 'string') {
-              corporateId = approvalToStore.corporateId;
-            } else if (approvalToStore.corporateId.$oid) {
-              corporateId = approvalToStore.corporateId.$oid;
-            }
-          }
-
-          // Ensure items array includes only valid items with non-empty name and productId
-          const items = approvalToStore.items && Array.isArray(approvalToStore.items)
-            ? approvalToStore.items
-                .filter(item => {
-                  if (typeof item === 'object') {
-                    return item.name && item.productId;
-                  }
-                  return false;
-                })
-                .map(item => {
-                  let name = item.name;
-                  let productId = item.productId;
-                  let quantity = 1;
-                  if (item.quantity && item.quantity.$numberInt) quantity = parseInt(item.quantity.$numberInt);
-                  else if (typeof item.quantity === 'number') quantity = item.quantity;
-                  return { name, quantity, productId };
-                })
-            : [];
-
-          if (!items || items.length === 0) {
-            setError('Cannot place order: No valid items found.');
-            setLoading(false);
-            return;
-          }
-          const orderPayload = {
-            totalAmount: approvalToStore.creditsRequested,
-            corporateId,
-            items,
-            deliveryAddress: approvalToStore.deliveryAddress || 'Sample Address',
-            invoiceNumber: null,
-            currentStatus: 'Order Placed'
-          };
+          // Only send status update for approve/reject
+          const statusValue = action === 'approve' ? 'approved' : 'rejected';
           try {
-            const orderRes = await fetch('http://192.168.1.4:5000/order', {
-              method: 'POST',
+            const orderRes = await fetch(`http://10.10.0.218:5000/approval`, {
+              method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
               },
-              body: JSON.stringify(orderPayload),
+              body: JSON.stringify({
+                newStatus: statusValue,
+                approvalId: approvalToStore.id, // send MongoDB _id
+              }),
             });
             if (!orderRes.ok) {
               const errorText = await orderRes.text();
-              console.error('Order POST failed:', orderRes.status, errorText);
-              setError(`Order POST failed: ${orderRes.status}`);
+              console.error('Order PUT failed:', orderRes.status, errorText);
+              setError(`Order PUT failed: ${orderRes.status}`);
               return;
             } else {
               const result = await orderRes.json().catch(() => null);
-              console.log('Order POST success:', result);
+              console.log('Order PUT success:', result);
             }
           } catch (orderErr) {
-            console.error('Order POST error:', orderErr);
-            setError('Order POST error: ' + orderErr.message);
+            console.error('Order PUT error:', orderErr);
+            setError('Order PUT error: ' + orderErr.message);
             return;
           }
         }
@@ -402,6 +364,40 @@ const Approval = () => {
                   boxSizing: 'border-box',
                 }}
               >
+                {/* Status Bar */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '12px',
+                  borderTopLeftRadius: '15px',
+                  borderTopRightRadius: '15px',
+                  background:
+                    approvalData.status === 'approved' ? '#4BB543' :
+                    approvalData.status === 'rejected' ? '#FF3B30' :
+                    '#007AFF',
+                  transition: 'background 0.3s',
+                }} />
+                {/* Status Label */}
+                <div style={{
+                  position: 'absolute',
+                  top: '14px',
+                  right: '38px',
+                  fontWeight: 600,
+                  fontSize: '16px',
+                  color:
+                    approvalData.status === 'approved' ? '#4BB543' :
+                    approvalData.status === 'rejected' ? '#FF3B30' :
+                    '#007AFF',
+                  background: 'rgba(255,255,255,0.85)',
+                  padding: '2px 14px',
+                  borderRadius: '8px',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  zIndex: 2,
+                }}>
+                  {approvalData.status ? approvalData.status.charAt(0).toUpperCase() + approvalData.status.slice(1) : 'Pending'}
+                </div>
                 {/* Left column: details */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '22px', marginBottom: '10px', color: '#222' }}>
