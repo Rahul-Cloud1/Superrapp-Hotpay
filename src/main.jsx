@@ -15,6 +15,10 @@ import Miceform from './Miceform.jsx'
 import Products from './Products.jsx'
 import AdminDashboard from './admin.jsx'
 import Cart from './Cart.jsx'
+import Sidebar from './Sidebar.jsx'
+import Vendorlogin from './vendorlogin.jsx'
+import VendorDashboard from './vendordashboard.jsx'
+
 
 
 createRoot(document.getElementById('root')).render(
@@ -34,6 +38,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/products" element={<Products />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/sidebar" element={<Sidebar />} />
+        <Route path="/vendorlogin" element={<Vendorlogin />} />
+        <Route path="/vendordashboard" element={<VendorDashboard />} />
+       
          {/* Redirect root path to login */}
         
         

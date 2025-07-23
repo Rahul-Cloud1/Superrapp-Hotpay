@@ -1,6 +1,6 @@
 
 // API endpoints
-const SEND_OTP_API = 'http://10.10.0.218:5000/auth/login';
+const SEND_OTP_API = 'http://192.168.1.4:5000/auth/login/vendor';
 
 
 async function sendOTP(email) {
@@ -14,7 +14,7 @@ async function sendOTP(email) {
   return response;
 }
 // API endpoints
-const VERIFY_OTP_API = 'http://10.10.0.218:5000/auth/verify';
+const VERIFY_OTP_API = 'http://192.168.1.4:5000/auth/login/vendor';
 
 async function verifyOTP(email, otpValue) {
   const response = await fetch(VERIFY_OTP_API, {
@@ -31,7 +31,7 @@ import './Login.css';
 import logo from './assets/image 3.png'
 import applink from './assets/applink.png';
 
-function Login() {
+function vendorlogin() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '']);
   const [showOTP, setShowOTP] = useState(false);
@@ -74,7 +74,7 @@ function Login() {
         
 
         <li>
-          <Link to="/signup" className="nav-link" style={{
+          <a href="#" className="nav-link" style={{
             width: '156px',
             height: '47px',
             position: 'absolute',
@@ -96,7 +96,7 @@ function Login() {
             color: '#1172B6',
             border: 'none',
             borderRadius: '4px'
-          }}>Sign Up</Link>
+          }}>Register Now</a>
         </li>
         <li>
           <a href="#" className="nav-link" style={{
@@ -124,11 +124,11 @@ function Login() {
           }}>Contact Us</a>
         </li>
         <li>
-          <Link to="/venderlogin"style={{
+          <a href="#" className="nav-link" style={{
             width: '180px',
             height: '47px',
             position: 'absolute',
-            top: '56px',
+            top: '48px',
             left: '1178px',
             transform: 'rotate(0deg)',
             opacity: 1,
@@ -146,7 +146,7 @@ function Login() {
             color: '#1172B6',
             border: 'none',
             borderRadius: '4px'
-          }}>Vendor Login</Link>
+          }}>Vendor Login</a>
         </li>
       </ul>
     </nav>
@@ -164,7 +164,7 @@ function Login() {
         opacity: 1,
         background: 'linear-gradient(360deg, #1172B6 5.29%, #073250 55.29%)'
       }}>
-        {/* Hi Super Admin Text */}
+        {/* Welcome Back, Partner 👋 */}
         <div style={{
           width: '516px',
           height: '42px',
@@ -185,9 +185,9 @@ function Login() {
           verticalAlign: 'middle',
           zIndex: 11
         }}>
-          Hi Super Admin,
+          Welcome Back, Partner 👋
         </div>
-        {/* Streamline your office management Text */}
+        {/* Manage orders, inventory, and earnings */}
         <div style={{
           width: '596px',
           height: '136px',
@@ -197,9 +197,9 @@ function Login() {
           transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
-          fontWeight: 800,
+          fontWeight: 600,
           fontStyle: 'normal',
-          fontSize: '70px',
+          fontSize: '50px',
           lineHeight: '120%',
           letterSpacing: '0%',
           color: 'rgba(255, 255, 255, 1)',
@@ -210,10 +210,10 @@ function Login() {
           verticalAlign: 'middle',
           zIndex: 11
         }}>
-          <span>Streamline your</span>
-          <span>office management</span>
+          <span>Manage orders,</span>
+          <span>inventory, and earnings</span>
         </div>
-        {/* Subtitle under office management */}
+        {/* Subtitle under */}
         <div style={{
           width: '700px',
           height: '40px',
@@ -234,7 +234,7 @@ function Login() {
           verticalAlign: 'middle',
           zIndex: 11
         }}>
-          Procure supplies. Book services. One platform for everything your office needs.
+          Manage orders, update inventory, and grow your business — all from one powerful dashboard.
         </div>
         {/* Download our app Text */}
         <div style={{
@@ -521,7 +521,7 @@ function Login() {
                   localStorage.setItem('token', data.token);
                 }
                 setInfo('Login successful!');
-                setTimeout(() => navigate('/app'), 1200);
+                setTimeout(() => navigate('/vendordashboard'), 1200);
               } catch (err) {
                 setError(err.message || 'Login failed');
               } finally {
@@ -580,7 +580,7 @@ function Login() {
         
         {/* Forgot Password Text removed as requested */}
         
-        {/* Sign up Text */}
+        {/* Register Text */}
         <div style={{
           width: '304.90px',
           height: '26px',
@@ -608,11 +608,11 @@ function Login() {
             textDecoration: 'underline',
             textDecorationStyle: 'solid',
             marginLeft: '4px'
-          }}>Sign up</Link>
+          }}>Register</Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default vendorlogin;

@@ -168,7 +168,7 @@ const Orders = () => {
         if (token) {
           document.cookie = `token=${token}; path=/`;
         }
-        const res = await fetch('http://10.10.0.218:5000/Orders', {
+        const res = await fetch('http://192.168.1.4:5000/order', {
           method: 'GET',
           credentials: 'include',
         });

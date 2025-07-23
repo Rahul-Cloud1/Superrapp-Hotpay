@@ -212,31 +212,7 @@ function SignUp() {
         <div className="header-content">
           <nav className="header-nav">
             <ul className="nav-links">
-               <li>
-                <a href="#" className="nav-link" style={{
-                  width: '156px',
-                  height: '47px',
-                  position: 'absolute',
-                  top: '48px',
-                  left: '534px',
-                  transform: 'rotate(0deg)',
-                  opacity: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textDecoration: 'none',
-                  fontFamily: 'Poppins, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '20px',
-                  lineHeight: '100%',
-                  letterSpacing: '0%',
-                  textAlign: 'center',
-                  background: 'white',
-                  color: '#1172B6',
-                  border: 'none',
-                  borderRadius: '4px'
-                }}> Sign Up</a>
-              </li>
+               
               <li>
                 <Link to="/login" className="nav-link" style={{
                   width: '156px',

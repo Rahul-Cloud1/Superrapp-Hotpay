@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
 import profileIcon from './assets/My Profile Icon.png';
@@ -16,7 +17,7 @@ import './App.css';
 const styles = {
   profileStyle: {
     width: '1440px',
-    height: '900px',
+    height: '1050px',
     transform: 'rotate(0deg)',
     opacity: 1,
     background: 'rgba(245, 243, 243, 1)'
@@ -206,19 +207,28 @@ const Approval = () => {
         if (Array.isArray(data)) {
           mapped = data.map((cart, idx) => ({
             id: cart._id || idx + 1,
-            requestedBy: cart.corporateId || 'User',
-            orderDetails: Array.isArray(cart.items) ? cart.items.map(i => i.name) : [],
-            amount: Array.isArray(cart.items) ? cart.items.reduce((sum, i) => sum + (i.totalPrice || 0), 0) : 0,
+            approvalId: cart.approvalId || '',
+            requestedBy: cart.requestedBy || '',
+            corporateId: cart.corporateId || '',
+            creditsRequested: cart.creditsRequested || 0,
+            status: cart.status || '',
+            // Preserve full item objects for correct payload mapping
+            items: Array.isArray(cart.items) ? cart.items : [],
+            createdAt: cart.createdAt || '',
           }));
         } else if (data && typeof data === 'object') {
           mapped = [{
             id: data._id,
-            requestedBy: data.corporateId,
-            orderDetails: Array.isArray(data.items) ? data.items.map(i => i.name) : [],
-            amount: Array.isArray(data.items) ? data.items.reduce((sum, i) => sum + (i.totalPrice || 0), 0) : 0,
+            approvalId: data.approvalId || '',
+            requestedBy: data.requestedBy || '',
+            corporateId: data.corporateId || '',
+            creditsRequested: data.creditsRequested || 0,
+            status: data.status || '',
+            items: Array.isArray(data.items) ? data.items : [],
+            createdAt: data.createdAt || '',
           }];
         }
-        setApprovals(mapped);
+        setApprovals(mapped.reverse());
       } catch (err) {
         console.error('Approval API error:', err);
         setError(err.message || 'Error fetching approvals');
@@ -235,12 +245,78 @@ const Approval = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const url = `http://192.168.1.4:5000/approval/${id}/${action}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error(`Failed to ${action} approval`);
+      if (action === 'approve') {
+        // Find the approval data for this id
+        const approvalToStore = approvals.find(a => a.id === id);
+        if (approvalToStore) {
+          // Build payload for /order endpoint as per backend schema
+          // Ensure corporateId is always a valid ObjectId string
+          let corporateId = '';
+          if (approvalToStore.corporateId) {
+            if (typeof approvalToStore.corporateId === 'string') {
+              corporateId = approvalToStore.corporateId;
+            } else if (approvalToStore.corporateId.$oid) {
+              corporateId = approvalToStore.corporateId.$oid;
+            }
+          }
+
+          // Ensure items array includes only valid items with non-empty name and productId
+          const items = approvalToStore.items && Array.isArray(approvalToStore.items)
+            ? approvalToStore.items
+                .filter(item => {
+                  if (typeof item === 'object') {
+                    return item.name && item.productId;
+                  }
+                  return false;
+                })
+                .map(item => {
+                  let name = item.name;
+                  let productId = item.productId;
+                  let quantity = 1;
+                  if (item.quantity && item.quantity.$numberInt) quantity = parseInt(item.quantity.$numberInt);
+                  else if (typeof item.quantity === 'number') quantity = item.quantity;
+                  return { name, quantity, productId };
+                })
+            : [];
+
+          if (!items || items.length === 0) {
+            setError('Cannot place order: No valid items found.');
+            setLoading(false);
+            return;
+          }
+          const orderPayload = {
+            totalAmount: approvalToStore.creditsRequested,
+            corporateId,
+            items,
+            deliveryAddress: approvalToStore.deliveryAddress || 'Sample Address',
+            invoiceNumber: null,
+            currentStatus: 'Order Placed'
+          };
+          try {
+            const orderRes = await fetch('http://192.168.1.4:5000/order', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+              },
+              body: JSON.stringify(orderPayload),
+            });
+            if (!orderRes.ok) {
+              const errorText = await orderRes.text();
+              console.error('Order POST failed:', orderRes.status, errorText);
+              setError(`Order POST failed: ${orderRes.status}`);
+              return;
+            } else {
+              const result = await orderRes.json().catch(() => null);
+              console.log('Order POST success:', result);
+            }
+          } catch (orderErr) {
+            console.error('Order POST error:', orderErr);
+            setError('Order POST error: ' + orderErr.message);
+            return;
+          }
+        }
+      }
       // Remove the approval from UI
       setApprovals(prev => prev.filter(a => a.id !== id));
     } catch (err) {
@@ -305,39 +381,89 @@ const Approval = () => {
               <div
                 key={approvalData.id}
                 style={{
-                  marginBottom: '22px',
-                  width: '1190px',
-                  height: '369px',
+                  marginBottom: '28px',
+                  width: '100%',
+                  minWidth: '1200px',
+                  maxWidth: '1800px',
+                  minHeight: '120px',
                   borderRadius: '15px',
-                  background: 'rgba(17, 114, 182, 0.15)',
+                  background: '#d6e2ec',
                   opacity: 1,
-                  transform: 'rotate(0deg)',
                   zIndex: 1,
-                  color: '#1172B626',
+                  color: '#222',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '28px 38px 28px 38px',
+                  position: 'relative',
+                  fontFamily: 'Poppins',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                  boxSizing: 'border-box',
                 }}
               >
-                <div style={{ position: 'absolute', top: '20px', left: '19px', width: '291px', height: '21px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '20px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  {`Approval ID - ${approvalData.id}`}
+                {/* Left column: details */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1 }}>
+                  <div style={{ fontWeight: 600, fontSize: '22px', marginBottom: '10px', color: '#222' }}>
+                    Approval ID - {approvalData.approvalId}
+                  </div>
+                  <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '2px', color: '#222' }}>Requested by:</div>
+                  <div style={{ fontWeight: 400, fontSize: '15px', marginBottom: '8px', color: '#222' }}>{approvalData.requestedBy}</div>
+                  <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '2px', color: '#222' }}>Items requested:</div>
+                  <ol style={{ margin: '2px 0 8px 18px', padding: 0 }}>
+                    {approvalData.items && approvalData.items.map((item, i) => (
+                      typeof item === 'object' && item !== null ? (
+                        <li key={i} style={{ fontWeight: 400, fontSize: '15px', color: '#222' }}>
+                          {item.name ? `Name: ${item.name}` : ''}
+                          {item.quantity ? `, Qty: ${item.quantity}` : ''}
+                          {item.productId ? `, ProductId: ${item.productId}` : ''}
+                        </li>
+                      ) : (
+                        <li key={i} style={{ fontWeight: 400, fontSize: '15px', color: '#222' }}>{item}</li>
+                      )
+                    ))}
+                  </ol>
+                  <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '2px', color: '#222' }}>Amount requested:</div>
+                  <div style={{ fontWeight: 400, fontSize: '15px', marginBottom: '8px', color: '#222' }}>{approvalData.creditsRequested} credits</div>
+                  <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '2px', color: '#222' }}>Remarks:</div>
+                  <div style={{ fontWeight: 400, fontSize: '15px', marginBottom: '8px', color: '#222' }}>{approvalData.remarks || 'xxxxxxxx'}</div>
                 </div>
-                <div style={{ position: 'absolute', top: '54px', left: '19px', width: '291px', height: '24px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  Requested by:
-                </div>
-                <div style={{ position: 'absolute', top: '78px', left: '19px', width: '237px', height: '23px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  {approvalData.requestedBy}
-                </div>
-                <div style={{ position: 'absolute', top: '112px', left: '19px', width: '291px', height: '24px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  Order details:
-                </div>
-                <div style={{ position: 'absolute', top: '136px', left: '19px', width: '237px', height: '54px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  {approvalData.orderDetails && approvalData.orderDetails.map((item, i) => (
-                    <span key={i}>{`Item ${i + 1}: ${item}`}<br /></span>
-                  ))}
-                </div>
-                <div style={{ position: 'absolute', top: '200px', left: '19px', width: '291px', height: '24px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  Amount requested:
-                </div>
-                <div style={{ position: 'absolute', top: '224px', left: '19px', width: '237px', height: '23px', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'Medium', fontSize: '16px', lineHeight: '150%', letterSpacing: 0, verticalAlign: 'middle', color: 'rgba(0, 0, 0, 1)', opacity: 1, transform: 'rotate(0deg)' }}>
-                  {`${approvalData.amount} credits`}
+                {/* Right column: buttons */}
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '18px', alignItems: 'center', justifyContent: 'flex-end', minWidth: '320px' }}>
+                  <button
+                    style={{
+                      width: '120px',
+                      height: '40px',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(90deg, #007AFF 0%, #0056B3 100%)',
+                      color: '#fff',
+                      fontWeight: 600,
+                      fontSize: '17px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      opacity: 1,
+                    }}
+                    onClick={() => handleAction(approvalData.id, 'approve')}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    style={{
+                      width: '120px',
+                      height: '40px',
+                      borderRadius: '8px',
+                      background: '#fff',
+                      color: '#222',
+                      fontWeight: 600,
+                      fontSize: '17px',
+                      border: '2px solid #e3ecf3',
+                      cursor: 'pointer',
+                      opacity: 1,
+                    }}
+                    onClick={() => handleAction(approvalData.id, 'reject')}
+                  >
+                    Reject
+                  </button>
                 </div>
                 {/* ...existing code for remarks and buttons... */}
               </div>
@@ -365,25 +491,8 @@ const Approval = () => {
             </div>
           )}
         </div>
-        <aside style={{
-          width: '210px',
-          height: '779px',
-          position: 'fixed',
-          top: '120px',
-          left: 0,
-          background: 'rgba(255, 255, 255, 1)',
-          borderTop: '1px solid rgba(0,0,0,0.08)',
-          borderWidth: '1px',
-          opacity: 1,
-          transform: 'rotate(0deg)',
-          zIndex: 10
-        }}>
-          {/* Sidebar navigation icons */}
-          <nav style={{ position: 'relative', width: '100%', height: '100%' }}>
-            {/* ...existing code... */}
-          </nav>
-        </aside>
-        <main style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 120px)', overflow: 'auto'}}>
+        <Sidebar />
+        <main style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 200px)', overflow: 'auto'}}>
           {/* Orders content goes here */}
         </main>
       </div>

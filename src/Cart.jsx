@@ -139,6 +139,44 @@ const ProfileSection = () => (
 const Cart = () => {
   // Utility to add a product to cart with required fields
   // Function to update cart on backend
+  // Reusable function for quantity change (increment/decrement)
+  const updateCartItemQuantity = async (item, newQty) => {
+    const payload = {
+      productId: item.productId,
+      variantId: item.variantId,
+      name: item.name,
+      price: item.unitPrice || item.price,
+      superPrice: item.sellingPrice ? `₹${item.sellingPrice}` : item.superPrice,
+      moq: item.moq,
+      image: item.image,
+      quantity: newQty,
+      subcategory: item.subcategory,
+      gstPercentage: item.gstPercentage,
+      gstAmount: (item.sellingPrice && item.gstPercentage)
+        ? ((parseFloat(item.sellingPrice) * parseFloat(item.gstPercentage) / 100).toFixed(2))
+        : item.gstAmount || ''
+    };
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      alert('No valid token found. Please login again.');
+      return;
+    }
+    try {
+      const res = await fetch('http://192.168.1.4:5000/cart', {
+        method: 'POST', // or 'PUT' if your backend expects it
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        alert('Failed to update cart item quantity');
+      }
+    } catch (err) {
+      alert('Error updating cart item quantity');
+    }
+  };
   const updateCartOnBackend = async (updatedCart) => {
     const token = localStorage.getItem('token');
     if (!token || token === 'undefined' || token === 'null') {
@@ -678,30 +716,33 @@ const Cart = () => {
                   justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
-                onClick={() => {
+                onClick={async () => {
                   let updated = [...cartItems];
-                  if (updated[idx].qty === 1) {
+                  let itemToUpdate = updated[idx];
+                  if (itemToUpdate.qty === 1) {
+                    // Remove item and do not call backend for this item
                     updated.splice(idx, 1);
+                    setCartItems(updated);
+                    localStorage.setItem('cart', JSON.stringify(updated));
+                    return;
                   } else {
-                    updated[idx].qty = updated[idx].qty - 1;
+                    itemToUpdate.qty = itemToUpdate.qty - 1;
+                    updated[idx] = itemToUpdate;
                   }
                   // Ensure required fields for backend
                   updated = updated.map(item => ({
-                    name: item.name || '',
-                    qty: item.qty || 1,
-                    productId: item.productId || '',
-                    variantId: item.variantId || '',
-                    ...item
-                  }));
-                  setCartItems(updated);
-                  localStorage.setItem('cart', JSON.stringify(updated));
-                  // Send only required fields to backend
-                  updateCartOnBackend(updated.map(item => ({
+                    ...item,
                     name: item.name || '',
                     qty: item.qty || 1,
                     productId: item.productId || '',
                     variantId: item.variantId || ''
-                  })));
+                  }));
+                  setCartItems(updated);
+                  localStorage.setItem('cart', JSON.stringify(updated));
+                  // Wait 50ms before backend update
+                  await new Promise(res => setTimeout(res, 50));
+                  // Send only required fields to backend for the correct item
+                  await updateCartItemQuantity(updated[idx], updated[idx]?.qty || 1);
                 }}
               >-</button>
               <span style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: '16px', color: '#fff', minWidth: '18px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '28px' }}>{item.qty}</span>
@@ -721,26 +762,25 @@ const Cart = () => {
                   justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
-                onClick={() => {
+                onClick={async () => {
                   let updated = [...cartItems];
-                  updated[idx].qty = updated[idx].qty + 1;
+                  let itemToUpdate = updated[idx];
+                  itemToUpdate.qty = itemToUpdate.qty + 1;
+                  updated[idx] = itemToUpdate;
                   // Ensure required fields for backend
                   updated = updated.map(item => ({
+                    ...item,
                     name: item.name || '',
                     qty: item.qty || 1,
                     productId: item.productId || '',
-                    variantId: item.variantId || '',
-                    ...item
+                    variantId: item.variantId || ''
                   }));
                   setCartItems(updated);
                   localStorage.setItem('cart', JSON.stringify(updated));
-                  // Send only required fields to backend
-                  updateCartOnBackend(updated.map(item => ({
-                    name: item.name || '',
-                    qty: item.quanti || 1,
-                    productId: item.productId || '',
-                    variantId: item.variantId || ''
-                  })));
+                  // Wait 50ms before backend update
+                  await new Promise(res => setTimeout(res, 50));
+                  // Send only required fields to backend for the correct item
+                  await updateCartItemQuantity(updated[idx], updated[idx]?.qty || 1);
                 }}
               >+</button>
             </div>
