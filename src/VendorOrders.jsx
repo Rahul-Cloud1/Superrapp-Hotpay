@@ -15,7 +15,7 @@ function VendorOrders() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('http://10.10.0.218:5000/vendor/order', {
+    fetch('http://localhost:5000/vendor/order', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

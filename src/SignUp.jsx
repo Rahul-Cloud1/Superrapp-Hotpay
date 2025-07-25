@@ -28,7 +28,7 @@ function SignUp() {
 
   // Backend API endpoint 
 
-  const API_URL = 'http://10.10.0.218:5000/corporate';
+  const API_URL = 'http://localhost:5000/corporate';
 
   // Form submit handler
   const handleSubmit = async (e) => {
@@ -72,9 +72,6 @@ function SignUp() {
     }
   };
 
-
-
-
   // Hide scrollbars visually but allow scrolling
   useEffect(() => {
     // Set body to allow scrolling
@@ -114,8 +111,8 @@ function SignUp() {
 
   return (
     <div className="signup-container" style={{
-      width: '1440px',
-      height: '1671px',
+      width: '1180px',
+      height: '1197px',
       transform: 'rotate(0deg)',
       opacity: 1,
       background: 'rgba(255, 255, 255, 1)',
@@ -145,7 +142,7 @@ function SignUp() {
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 600,
-          fontStyle: 'normal',
+          fontStyle: 'Semibold',
           fontSize: '40px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -168,7 +165,7 @@ function SignUp() {
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 400,
-          fontStyle: 'normal',
+          fontStyle: 'Regular',
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -192,7 +189,7 @@ function SignUp() {
         position: 'absolute',
         top: 0,
         left: 0,
-        zIndex: 10
+        zIndex: 10  
       }}>
         
           <img 
@@ -226,9 +223,10 @@ function SignUp() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   textDecoration: 'none',
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Poppins',
                   fontWeight: 600,
-                  fontSize: '20px',
+                  fontStyle: 'Semibold',
+                  fontSize: '26px',
                   lineHeight: '100%',
                   letterSpacing: '0%',
                   textAlign: 'center',
@@ -251,9 +249,10 @@ function SignUp() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   textDecoration: 'none',
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Poppins',
                   fontWeight: 600,
-                  fontSize: '20px',
+                  fontSize: '26px',
+                  fontStyle: 'Semibold',
                   lineHeight: '100%',
                   letterSpacing: '0%',
                   textAlign: 'center',
@@ -269,16 +268,17 @@ function SignUp() {
                   height: '47px',
                   position: 'absolute',
                   top: '48px',
-                  left: '1178px',
+                  left: '1197px',
                   transform: 'rotate(0deg)',
                   opacity: 1,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   textDecoration: 'none',
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Poppins',
                   fontWeight: 600,
-                  fontSize: '20px',
+                  fontSize: '26px',
+                  fontStyle: 'Semibold',
                   lineHeight: '100%',
                   letterSpacing: '0%',
                   textAlign: 'center',
@@ -311,8 +311,8 @@ function SignUp() {
           src={logo}
           alt="SuperApp Logo"
           style={{
-            width: '292.7135925292969px',
-            height: '131.3255615234375px',
+            width: '292.71px',
+            height: '131.33px',
             transform: 'rotate(0deg)',
             opacity: 1,
             position: 'absolute',
@@ -331,7 +331,7 @@ function SignUp() {
           left: '613px',
           fontFamily: 'Poppins',
           fontWeight: 600,
-          fontStyle: 'normal',
+          fontStyle: 'Semibold',
           fontSize: '32px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -355,7 +355,7 @@ function SignUp() {
           left: '80px',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontStyle: 'normal',
+          fontStyle: 'Medium',
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -377,7 +377,7 @@ function SignUp() {
           left: '650px',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontStyle: 'normal',
+          fontStyle: 'Medium',
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -406,7 +406,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -431,7 +432,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -450,7 +452,7 @@ function SignUp() {
           left: '80px',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontStyle: 'normal',
+          fontStyle: 'Medium',
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -471,7 +473,7 @@ function SignUp() {
           left: '650px',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontStyle: 'normal',
+          fontStyle: 'Medium',
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -484,7 +486,7 @@ function SignUp() {
 
         {/* Employee Count Input */}
         <input
-          type="number"
+          type="text"
           value={formData.employeeCount}
           onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
           style={{
@@ -500,7 +502,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -524,7 +527,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -544,6 +548,7 @@ function SignUp() {
           fontWeight: 500,
           fontStyle: 'normal',
           fontSize: '26px',
+          fontStyle: 'Medium',
           lineHeight: '100%',
           letterSpacing: '0%',
           display: 'flex',
@@ -570,7 +575,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -592,6 +598,7 @@ function SignUp() {
           fontSize: '26px',
           lineHeight: '100%',
           letterSpacing: '0%',
+          fontStyle: 'Medium',
           display: 'flex',
           alignItems: 'center',
           color: 'rgba(0, 0, 0, 0.75)'
@@ -616,7 +623,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -637,6 +645,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -662,7 +671,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -683,6 +693,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -708,7 +719,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -729,6 +741,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -755,7 +768,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -776,6 +790,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -802,7 +817,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -823,6 +839,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -848,7 +865,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -869,6 +887,7 @@ function SignUp() {
           fontStyle: 'normal',
           fontSize: '26px',
           lineHeight: '100%',
+          fontStyle: 'Medium',
           letterSpacing: '0%',
           display: 'flex',
           alignItems: 'center',
@@ -894,7 +913,8 @@ function SignUp() {
             outline: 'none',
             padding: '0 15px',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15px',
+            fontStyle: 'Regular',
             color: '#333',
             background: 'white'
           }}
@@ -919,7 +939,7 @@ function SignUp() {
             color: 'white',
             fontFamily: 'Poppins',
             fontWeight: 600,
-            fontSize: '24px',
+            fontSize: '26.67px',
             cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',

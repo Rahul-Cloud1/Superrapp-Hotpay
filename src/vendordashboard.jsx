@@ -21,7 +21,7 @@ function VendorDashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('http://10.10.0.218:5000/vendor/profile', {
+    fetch('http://localhost:5000/vendor/profile', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -44,7 +44,7 @@ function VendorDashboard() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://10.10.0.218:5000/vendor/profile', {
+      const res = await fetch('http://localhost:5000/vendor/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address: newWarehouseAddress })
@@ -67,7 +67,7 @@ function VendorDashboard() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://10.10.0.218:5000/vendor/profile', {
+      const res = await fetch('http://localhost:5000/vendor/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address: newBillingAddress })

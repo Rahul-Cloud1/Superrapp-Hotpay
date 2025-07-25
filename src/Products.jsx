@@ -147,7 +147,8 @@ const ProfileSection = () => (
 
 const sidebarStyle = {
   width: '210px',
-  height: '779px',
+  maxHeight: 'calc(100vh - 120px)', // Never exceed viewport minus header
+  height: 'auto', // Let sidebar grow with content
   position: 'fixed',
   top: '120px',
   left: 0,
@@ -197,7 +198,7 @@ const categoriesData = [
       "Dustbins & Trash Bags"
     ]
   },
-  // ...rest of your categories...
+  //  categories...
 ];
 
 const Products = () => {
@@ -205,7 +206,7 @@ const Products = () => {
   const updateCartQuantity = async (productId, variantId, qty) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://10.10.0.218:5000/cart', {
+      const res = await fetch('http://localhost:5000/cart', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -224,7 +225,7 @@ const Products = () => {
   // Fetch cart data
   const fetchCart = async () => {
     try {
-      const res = await fetch('http://10.10.0.218:5000/cart');
+      const res = await fetch('http://localhost:5000/cart');
       if (res.ok) {
         const data = await res.json();
         return data;
@@ -243,7 +244,7 @@ const Products = () => {
     const cartData = await fetchCart();
     // Replace with your approval endpoint and payload
     try {
-      const res = await fetch('http://10.10.0.218:5000/approval', {
+      const res = await fetch('http://localhost:5000/approval', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -270,7 +271,7 @@ const Products = () => {
     const allSubcategories = categoriesData.flatMap(cat => cat.subcategories);
     Promise.all(
       allSubcategories.map(subcat =>
-        fetch(`http://10.10.0.218:5000/product?category=${encodeURIComponent(subcat)}`)
+        fetch(`http://localhost:5000/product?category=${encodeURIComponent(subcat)}`)
           .then(res => res.json())
           .catch(() => [])
       )
@@ -296,48 +297,56 @@ const Products = () => {
       setProducts([]);
     });
   }, []);
-  const [openDropdown, setOpenDropdown] = useState(null);
+  // Set default to first category and its first subcategory
+  const [openDropdown, setOpenDropdown] = useState(categoriesData.length > 0 ? 0 : null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(
+    categoriesData.length > 0 && categoriesData[0].subcategories.length > 0 ? categoriesData[0].subcategories[0] : null
+  );
   const location = useLocation();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const selectedCategory = params.get('category');
+    const selectedSubcat = params.get('subcategory');
     if (selectedCategory) {
       const idx = categoriesData.findIndex(cat => cat.name.toLowerCase() === decodeURIComponent(selectedCategory).toLowerCase());
       if (idx !== -1) {
         setOpenDropdown(idx);
-        setSelectedSubcategory(null);
+        if (selectedSubcat) {
+          setSelectedSubcategory(decodeURIComponent(selectedSubcat));
+        } else if (categoriesData[idx].subcategories.length > 0) {
+          setSelectedSubcategory(categoriesData[idx].subcategories[0]);
+        } else {
+          setSelectedSubcategory(null);
+        }
       }
     }
   }, [location.search]);
 
   // --- FILTER PRODUCTS BASED ON SELECTION ---
   let filteredProducts = [];
-if (openDropdown !== null && categoriesData[openDropdown]) {
-  const categoryName = categoriesData[openDropdown].name;
-  let subcat = selectedSubcategory;
-  if (!subcat && categoriesData[openDropdown].subcategories && categoriesData[openDropdown].subcategories.length > 0) {
-    subcat = categoriesData[openDropdown].subcategories[0];
-    setSelectedSubcategory(subcat);
+  if (openDropdown !== null && categoriesData[openDropdown]) {
+    const categoryName = categoriesData[openDropdown].name;
+    let subcat = selectedSubcategory;
+    // No need to setSelectedSubcategory here, already handled in state initialization and useEffect
+    filteredProducts = products.filter(
+      p => p.category === categoryName && p.subcategory === subcat
+    );
+  } else {
+    filteredProducts = [];  
   }
-  filteredProducts = products.filter(
-    p => p.category === categoryName && p.subcategory === subcat
-  );
-} else {
-  filteredProducts = [];
-}
 
   return (
     <div style={{
-      width: '1440px',
-      height: '900px',
+      width: '100vw',
+      height: '100vh',
+      minHeight: '1200px', // Increased min height for more products
       opacity: 1,
       transform: 'rotate(0deg)',
       margin: '0 auto',
       position: 'relative',
-      overflow: 'hidden',
+      overflow: 'auto',
     }}>
       <style>{`
         .product-card {
@@ -504,12 +513,14 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
         left: '235px',
         right: 0,
         padding: '1px',
-        display: 'flex',
-        flexDirection: 'row',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(5, 1fr)',
         gap: '24px',
         width: 'calc(100vw - 267px)',
-        minHeight: '10px',
+        minHeight: '900px', // Increased min height for more products
+        maxHeight: 'calc(100vh - 147px)',
         background: 'transparent',
+        overflowY: 'auto',
         overflowX: 'auto',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
@@ -519,33 +530,40 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
             No products found.
           </div>
         ) : (
-          filteredProducts.map((product, idx) => (
-            <div key={product.id} className="product-card" style={{
-              minWidth: '210px',
-              maxWidth: '210px',
-              minHeight: '320px',
-              borderRadius: '20px',
+          // Remove duplicate products by _id (if any)
+          Array.from(new Map(filteredProducts.map(p => [p._id, p])).values()).map((product, idx) => (
+            <div key={product._id || product.id || idx} className="product-card" style={{
+              minWidth: '230px',
+              maxWidth: '230px',
+              width: '230px',
+              minHeight: '400px',
+              maxHeight: '400px',
+              height: '420px',
+              borderRadius: 0,
               color: '#222',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               margin: '0',
-              padding: '18px 14px 14px 14px',
+              padding: '18px 14px 0 14px',
               position: 'relative',
               overflow: 'hidden',
               background: '#fff',
+              boxSizing: 'border-box',
+              justifyContent: 'space-between',
             }}>
               {/* GST Percentage in top-right corner (placeholder if missing) */}
               <div style={{
                 position: 'absolute',
                 top: '6px',
                 right: '8px',
-                fontSize: '14px',
-                color: product.gstPercentage ? '#007BFF' : '#ccc',
-                background: product.gstPercentage ? 'rgba(0,123,255,0.07)' : 'rgba(0,0,0,0.04)',
-                borderRadius: '6px',
+                fontSize: '12px',
+                fontFamily: 'Poppins',
+                background: product.gstPercentage ? 'rgba(125, 200, 247, 0.8)' : 'transparent',
+                color: product.gstPercentage ? 'rgba(0, 0, 0, 0.8)' : '#bbb',
+                borderRadius: '20px',
                 padding: '2px 6px',
-                fontWeight: 500,
+                fontWeight: 700,
                 zIndex: 3,
                 minHeight: '18px',
                 display: 'flex',
@@ -559,7 +577,7 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                 height: '180px',
                 background: '#fff',
                 borderRadius: '12px',
-                marginBottom: '8px',
+                marginBottom: '20px',
                 overflow: 'hidden',
                 position: 'relative',
                 display: 'flex',
@@ -573,7 +591,6 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                     objectFit: 'cover',
                     filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))',
                     transition: 'transform 0.2s',
-                    borderRadius: '12px',
                   }} />
                 ) : (
                   <div style={{width:'100%',height:'100%',background:'#f3f3f3',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',color:'#bbb',fontSize:'14px'}}>No Image</div>
@@ -582,7 +599,7 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
               <div style={{
                 width: '100%',
                 textAlign: 'left',
-                marginBottom: '4px',
+                marginBottom: '1px',
                 minHeight: '38px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -590,27 +607,39 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
               }}>
                 <span style={{
                   fontWeight: 600,
-                  fontSize: '15px',
-                  color: product.name ? '#222' : '#bbb',
+                  fontFamily: 'Poppins',
+                  fontSize: '17px',
+                  color: product.name ? 'rgba(0, 0, 0, 0.8)' : '#bbb',
                   letterSpacing: '0.2px',
                   lineHeight: '1.2',
                   display: '-webkit-box',
-                  marginBottom: '1px',
-                  minHeight: '18px',
-                  maxHeight: '38px',
+                  marginBottom: '15px',
+                  minHeight: '24px',
+                  maxHeight: '36px',
                   overflow: 'hidden',
-                  WebkitLineClamp: 2,
+                  WebkitLineClamp: 1.5,
                   WebkitBoxOrient: 'vertical',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'normal',
                   wordBreak: 'break-word',
-                }}>{product.name ? product.name : <span style={{opacity:0.5}}>No Name</span>}</span>
+                }}>{
+                  product.name
+                    ? (() => {
+                        const words = product.name.split(' ');
+                        if (words.length > 5) {
+                          return words.slice(0, 5).join(' ') + '...';
+                        } else {
+                          return product.name;
+                        }
+                      })()
+                    : <span style={{opacity:0.5}}>No Name</span>
+                }</span>
                 {/* Super Price - main price, attractive (placeholder if missing) */}
                 <span style={{
                   display: 'inline-block',
-                  fontSize: '18px', // Start smaller
-                  fontWeight: 400, // Less bold
-                  fontFamily: 'Comic Sans MS, Comic Sans, Chalkboard SE, Pacifico, Caveat, cursive', // Playful font
+                  fontSize: 'clamp(14px, 2vw, 18px)',
+                  fontWeight: 600,
+                  fontFamily:'Comic Sans MS, Comic Sans, Chalkboard SE, Pacifico, Caveat, cursive',
                   background: product.superPrice ? 'linear-gradient(90deg, #FF2E63, #FF9900, #FFD700, #43E97B, #9B59B6, #007BFF)' : 'none',
                   WebkitBackgroundClip: product.superPrice ? 'text' : 'none',
                   WebkitTextFillColor: product.superPrice ? 'transparent' : '#ccc',
@@ -624,33 +653,52 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                   minHeight: '28px',
                   border: 'none',
                   transition: 'all 0.2s',
+                  maxWidth: '180px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}>
-                  {/* Childish, each word with a distinct color */}
                   <span style={{
-                    fontSize: '20px',
+                    
+                    maxFontSize: '10px',
+                    minFontSize: '10px',
+                    fontSize: '16px',
                     fontWeight: 400,
-                    fontFamily: 'Comic Sans MS, Comic Sans, Chalkboard SE, Pacifico, Caveat, cursive',
-                    color: '#FF2E63', // Red
+                    fontFamily: 'poppins',
+                    color: '#FF2E63',
                     marginRight: '4px',
                   }}>Super</span>
                   <span style={{
-                    fontSize: '20px',
+                    
+                    maxFontSize: '10px',
+                    minFontSize: '10px',
+                    fontSize: '16px',
                     fontWeight: 400,
-                    fontFamily: 'Comic Sans MS, Comic Sans, Chalkboard SE, Pacifico, Caveat, cursive',
-                    color: '#FF9900', // Orange
+                    fontFamily: 'poppins',
+                    color: '#FF9900',
                     marginRight: '4px',
                   }}>Price:</span>
-                  <span style={{
-                    fontSize: '20px',
-                    fontWeight: 400,
-                    fontFamily: 'Comic Sans MS, Comic Sans, Chalkboard SE, Pacifico, Caveat, cursive',
-                    marginLeft: '6px',
-                  }}>
+                  <span
+                    style={{
+                      fontSize: (product.superPrice && product.superPrice.toString().replace(/\D/g, '').length > 4)
+                        ? '10px'
+                        : '16px',
+                      fontWeight: 600,
+                      fontFamily: 'poppins',
+                      color: '#FFD700',
+                      marginLeft: '6px',
+                      maxWidth: '140px', // Increased width to fit large prices
+                      overflow: 'visible', // Allow full price to show
+                      whiteSpace: 'nowrap',
+                      transition: 'font-size 0.2s',
+                      justifyContent: 'center',
+                    }}
+                  >
                     {product.superPrice && product.superPrice !== '' ? (
-                      <span style={{color:'#222', WebkitTextFillColor: '#222', background: 'none'}}>
-                        <span style={{color:'#222'}}>₹</span>{product.superPrice}
+                      <span style={{ color: '#222', WebkitTextFillColor: '#222', background: 'none' }}>
+                        <span style={{ color: '#222' }}>₹</span>{product.superPrice}
                       </span>
-                    ) : <span style={{opacity:0.5}}>N/A</span>}
+                    ) : <span style={{ opacity: 0.5 }}>N/A</span>}
                   </span>
                 </span>
               </div>
@@ -660,14 +708,14 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '6px',
+                marginBottom: '0',
                 gap: '2px',
                 minHeight: '18px',
               }}>
                 <span style={{
-                  fontSize: '12px', // Slightly smaller than super price
-                  fontWeight: 500,
-                  color: product.price ? '#007BFF' : '#ccc',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: product.price ? 'rgba(0, 0, 0, 0.8)' : '#ccc',
                   letterSpacing: '0.1px',
                   minWidth: '90px',
                   textAlign: 'left',
@@ -675,8 +723,9 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                   Unit Price: ₹{product.price && product.price !== '' ? product.price : <span style={{opacity:0.5}}>N/A</span>}
                 </span>
                 <span style={{
-                  fontSize: '12px', // Slightly smaller than super price
-                  fontWeight: 400,
+                  fontSize: '13px',
+                  maxFontSize: '14px',
+                  fontWeight: 600,
                   color: product.moq ? '#555' : '#ccc',
                   letterSpacing: '0.1px',
                   minWidth: '60px',
@@ -687,20 +736,33 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
               </div>
               <button style={{
                 border: 'none',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
-                color: 'white',
+                borderRadius: '8.71px',
+                background: 'rgba(17, 114, 182, 0.15)',
+                color: '#073250',
                 fontFamily: 'Poppins',
                 fontWeight: 600,
-                fontSize: '15px',
-                cursor: 'pointer',
-                width: '100%',
-                height: '33px',
-                marginTop: 'auto',
-                boxShadow: '0 2px 8px rgba(0,123,255,0.10)',
+                fontStyle: 'SemiBold',
+                fontSize: '20px',
+                lineHeight: '140%',
+                letterSpacing: '0%',
+                textAlign: 'center',
+                verticalAlign: 'middle',
+                width: '240px',
+                height: '45.5px',
+                marginTop: '4px',
+                color: '#073250',
+                boxShadow: '#073250 0 2px 8px',
                 transition: 'background 0.2s',
+                opacity: 1,
+                position: 'relative',
+                top: 0,
+                left: 0,
+                transform: 'rotate(0deg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                
               }}
-              // Add to Cart stores in backend, Cart page should fetch using GET /cart
               onClick={async () => {
                 const variant = product.variants && product.variants.length > 0 ? product.variants[0] : {};
                 const productId = product._id;
@@ -726,7 +788,7 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
                   return;
                 }
                 try {
-                  const res = await fetch('http://10.10.0.218:5000/cart', {
+                  const res = await fetch('http://localhost:5000/cart', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -755,5 +817,4 @@ if (openDropdown !== null && categoriesData[openDropdown]) {
     </div>
   );
 };
-
 export default Products;

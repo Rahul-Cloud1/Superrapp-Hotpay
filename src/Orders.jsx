@@ -168,7 +168,7 @@ const Orders = () => {
         if (token) {
           document.cookie = `token=${token}; path=/`;
         }
-        const res = await fetch('http://10.10.0.218:5000/order', {
+        const res = await fetch('http://localhost:5000/order', {
           method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });
@@ -177,19 +177,25 @@ const Orders = () => {
         // Map API response to required fields for display
         const mappedOrders = Array.isArray(data) ? data.map(order => ({
           date: order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '',
+          createdAt: order.createdAt ? new Date(order.createdAt) : null,
           id: order.orderId || '',
           items: Array.isArray(order.items)
-            ? order.items.map(item => {
-                const name = item.name || '';
-                const quantity = item.quantity !== undefined ? item.quantity : '';
-                return name ? `${name} (Qty: ${quantity})` : '';
-              }).filter(Boolean)
+            ? order.items
+                .filter(item => typeof item === 'object' && typeof item.name === 'string' && item.name.trim() !== '')
+                .map(item => `${item.name} (Qty: ${item.quantity !== undefined ? item.quantity : ''})`)
             : [],
           totalAmount: order.totalAmount || '',
           address: order.deliveryAddress || '',
           invoiceNo: order.invoiceNo || '',
           status: order.status || '',
         })) : [];
+        // Sort by createdAt descending (latest first)
+        mappedOrders.sort((a, b) => {
+          if (!a.createdAt && !b.createdAt) return 0;
+          if (!a.createdAt) return 1;
+          if (!b.createdAt) return -1;
+          return b.createdAt - a.createdAt;
+        });
         setOrders(mappedOrders);
       } catch (err) {
         setError(err.message || 'Error fetching orders');
@@ -212,10 +218,49 @@ const Orders = () => {
   };
 
   return (
-    <div style={styles.profileStyle}>
+    <div style={{ ...styles.profileStyle, minHeight: '100vh', background: 'rgba(245, 243, 243, 1)' }}>
       <style>{`
         .profile-scrollable::-webkit-scrollbar { display: none; }
         .profile-scrollable { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (max-width: 1200px) {
+          .orders-main {
+            margin-left: 0 !important;
+            padding-top: 100px !important;
+          }
+          .orders-card {
+            left: 2vw !important;
+            width: 96vw !important;
+          }
+          .orders-title {
+            left: 2vw !important;
+            font-size: 7vw !important;
+          }
+          aside {
+            display: none !important;
+          }
+        }
+        @media (max-width: 700px) {
+          .orders-title {
+            font-size: 8vw !important;
+            top: 110px !important;
+          }
+          .orders-card {
+            top: unset !important;
+            position: static !important;
+            margin: 16px 0 !important;
+            height: auto !important;
+            min-height: 220px !important;
+            padding-bottom: 24px !important;
+          }
+          .orders-card > div {
+            position: static !important;
+            display: block !important;
+            margin-bottom: 8px !important;
+          }
+          .orders-progress-line, .orders-status-label {
+            display: none !important;
+          }
+        }
       `}</style>
       <div style={{width: '100%', minHeight: '100vh', position: 'relative'}}>
         <header style={styles.header}>
@@ -228,7 +273,7 @@ const Orders = () => {
         </header>
         <aside style={{
           width: '210px',
-          height: '779px',
+          height: 'calc(100vh - 120px)',
           position: 'fixed',
           top: '120px',
           left: 0,
@@ -284,17 +329,18 @@ const Orders = () => {
             </div>
           </nav>
         </aside>
-        <main className="profile-scrollable" style={{marginLeft: '210px', paddingTop: '120px', height: 'calc(100vh - 120px)', overflow: 'auto'}}>
-          <div style={{
-            position: 'absolute',
-            top: '151px',
-            left: '235px',
+        <main className="profile-scrollable orders-main" style={{marginLeft: '160px', paddingTop: '160px', minHeight: 'calc(100vh - 120px)', overflow: 'auto', width: '100%'}}>
+          <div className="orders-title" style={{
+            position: 'relative',
+            marginLeft: '112px',
+            marginTop: '-24px',
+            marginBottom: '12px',
             width: '266px',
-            height: '78px',
+            height: '55px',
             fontFamily: 'Poppins',
-            fontWeight: 500,
+            fontWeight: 400,
             fontStyle: 'Medium',
-            fontSize: '52px',
+            fontSize: '32px',
             lineHeight: '100%',
             letterSpacing: 0,
             verticalAlign: 'middle',
@@ -307,55 +353,76 @@ const Orders = () => {
           {orders.length === 0 && !loading && !error && (
             <div style={{fontSize:18, color:'#333'}}>No orders found.</div>
           )}
-          {orders.map((order, idx) => (
-            <div key={order.id} style={{
-              position: 'absolute',
-              top: `${237 + idx * 203}px`,
-              left: '223px',
-              width: '1190px',
-              height: '194px',
-              borderRadius: '10px',
-              background: 'rgba(17, 114, 182, 0.15)',
-              border: '1.5px solid #1172B626',
-              fontFamily: 'Poppins',
-              color: '#000',
-              opacity: 1,
-              boxSizing: 'border-box',
-              zIndex: 2,
-              overflow: 'hidden',
-            }}>
-              {/* Date */}
-              <div style={{position:'absolute',top:'24px',left:'32px',fontSize:'18px',fontWeight:500}}>{order.date}</div>
-              {/* Invoice No. */}
-              {/* <div style={{position:'absolute',top:'24px',left:'950px',fontSize:'18px',fontWeight:500}}>{`Invoice no. - ${order.invoiceNo}`}</div> */}
-              {/* Order ID */}
-              <div style={{position:'absolute',top:'60px',left:'32px',fontSize:'16px',fontWeight:800}}>{`Order ID - ${order.id}`}</div>
-              {/* Items */}
-              <div style={{position:'absolute',top:'90px',left:'32px',fontSize:'16px',color:'#222',fontWeight:400}}>{order.items && order.items.join(', ')}</div>
-              {/* Total Amount */}
-              <div style={{position:'absolute',top:'120px',left:'32px',fontSize:'16px',fontWeight:500}}>{`Total amount - Rs ${order.totalAmount}`}</div>
-              {/* Delivery Address */}
-              <div style={{position:'absolute',top:'150px',left:'32px',fontSize:'16px',width:'568px',fontWeight:400}}>{`Delivery address - ${order.address}`}</div>
-              {/* Progress line */}
-              <div style={{position:'absolute',top:'140px',left:'750px',width:'350px',height:'0px',border:'1.5px solid rgba(0,0,0,0.75)'}} />
-              {/* Status circles: only 3 (Order placed, Out for delivery, Delivered) */}
-              {[0,1,2].map(i => (
-                <div key={i} style={{
-                  position:'absolute',
-                  top:`${140 - 10/2}px`,
-                  left:`${750 + (i * 350/2) - 10/2}px`,
-                  width:'10px',height:'10px',
-                  backgroundColor: i <= getStatusIndex(order.status) ? '#28a745' : 'rgba(0,0,0,0.75)', // green
-                  borderRadius:'50%',
-                  opacity:1
-                }} />
-              ))}
-              {/* Status labels: only 3 */}
-              <div style={{position:'absolute',top:'157px',left:`${750 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Order placed</div>
-              <div style={{position:'absolute',top:'157px',left:`${750 + (350/2) - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Out for delivery</div>
-              <div style={{position:'absolute',top:'157px',left:`${750 + 350 - 10/2 - (93/2) + 10/2}px`,width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Delivered</div>
-            </div>
-          ))}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', marginLeft: '90px', marginTop: '-3px'}}>
+            {orders.map((order, idx) => (
+              <div key={order.id} className="orders-card" style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+                width: '95vw',
+                maxWidth: '1100px',
+                minHeight: '194px',
+                borderRadius: '10px',
+                background: 'rgba(17, 114, 182, 0.15)',
+                border: '1.5px solid #1172B626',
+                fontFamily: 'Poppins',
+                color: '#000',
+                opacity: 1,
+                boxSizing: 'border-box',
+                zIndex: 2,
+                overflow: 'hidden',
+                marginBottom: '16px',
+                minWidth: '280px',
+                padding: '24px 32px 24px 32px',
+                gap: '8px',
+              }}>
+                <div style={{fontSize:'16px',fontWeight:600,marginBottom:'2px'}}>{order.date}</div>
+                <div style={{fontSize:'16px',fontWeight:600,marginBottom:'2px'}}>{`Order ID - ${order.id}`}</div>
+                <div className="orders-items-list" style={{
+                  fontSize: '16px',
+                  color: '#222',
+                  fontWeight: 400,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  width: '100%',
+                  minHeight: '24px',
+                  marginBottom: '2px',
+                }}>
+                  {Array.isArray(order.items) && order.items.length > 0
+                    ? order.items.map((item, i) => (
+                        typeof item === 'string' ? <div key={i} style={{
+                          fontWeight: 650,
+                          color: '#222',
+                          fontFamily: 'Poppins',
+                          fontSize: '15px',
+                        }}>{item}</div> : null
+                      ))
+                    : null}
+                </div>
+                <div style={{fontSize:'16px',fontWeight:600,marginBottom:'2px'}}>{`Total amount - Rs ${order.totalAmount}`}</div>
+                <div style={{fontSize:'16px',fontWeight:600,width:'100%',marginBottom:'2px'}}>{`Delivery address - ${order.address}`}</div>
+                <div style={{width:'100%',marginTop:'8px',position:'relative',height:'32px'}}>
+                  <div className="orders-progress-line" style={{position:'absolute',top:'12px',left:'36%',width:'28%',height:'0px',border:'1.5px solid rgba(0,0,0,0.75)'}} />
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{
+                      position:'absolute',
+                      top:'7px',
+                      left:`calc(36% + ${i} * 14%)`,
+                      width:'15px',height:'15px',
+                      backgroundColor: i <= getStatusIndex(order.status) ? '#28a745' : 'rgba(0,0,0,0.75)',
+                      borderRadius:'50%',
+                      opacity:1
+                    }} />
+                  ))}
+                  <div className="orders-status-label" style={{position:'absolute',top:'20px',left:'36%',width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Order placed</div>
+                  <div className="orders-status-label" style={{position:'absolute',top:'20px',left:'50%',width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Out for delivery</div>
+                  <div className="orders-status-label" style={{position:'absolute',top:'20px',left:'64%',width:'93px',height:'15px',fontSize:'13px',textAlign:'center',color:'rgba(0,0,0,0.75)'}}>Delivered</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </main>
       </div>
     </div>

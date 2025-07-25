@@ -15,7 +15,7 @@ function VendorApprovals() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('http://10.10.0.218:5000/vendor/order/request', {
+    fetch('http://localhost:5000/vendor/order/request', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ function VendorApprovals() {
     const approval = approvals.find(a => a._id === vendorOrderFlowId);
     if (!approval) return setError('Approval not found');
     try {
-      const res = await fetch('http://10.10.0.218:5000/vendor/order/request', {
+      const res = await fetch('http://localhost:5000/vendor/order/request', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ function VendorApprovals() {
     const approval = approvals.find(a => a._id === vendorOrderFlowId);
     if (!approval) return setError('Approval not found');
     try {
-      const res = await fetch('http://10.10.0.218:5000/vendor/order/request', {
+      const res = await fetch('http://localhost:5000/vendor/order/request', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -83,8 +83,8 @@ function VendorApprovals() {
         },
         body: JSON.stringify({
           orderId: approval.orderId,
-          vendorOrderFlowId: approval._id,
-          status: 'rejected'
+          vendorOrderFlowId: approval.vendorOrderFlowId,
+          status: 'reject'
         })
       });
       const data = await res.json();
@@ -239,19 +239,20 @@ function VendorApprovals() {
 
       {/* Main Content */}
       <div style={{
-        position: 'fixed',
-        top: '210px',
-        left: '227px',
-        width: '1180px',
-        height: '930px',
-        paddingBottom: '40px',
+        position: 'absolute',
+        top: '140px', // Just below header
+        left: '210px', // Just right of sidebar
+        width: 'calc(100vw - 210px - 40px)', // Full width minus sidebar and some margin
+        minWidth: '400px',
+        maxWidth: '1200px',
+        padding: '0 24px',
         background: 'transparent',
         display: 'flex',
         flexDirection: 'column',
         marginTop: 0,
         zIndex: 10
       }}>
-        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ width: '100%', position: 'relative', overflow: 'visible' }}>
           {/* Approval Cards or Empty/Error UI */}
           {loading ? (
             <div style={{ fontFamily: 'Poppins', fontSize: '20px', color: '#1172B6', textAlign: 'center', marginTop: '80px' }}>Loading approvals...</div>
@@ -262,14 +263,60 @@ function VendorApprovals() {
                 <div>{error || 'No approvals found'}</div>
               ) : (
                 approvals.map((approval, idx) => (
-                  <div key={idx} style={{ marginBottom: '16px', background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>
-                    <h3>Product Name: {approval.name}</h3>
-                    <p>Status: {approval.status}</p>
-                    <p>Quantity: {approval.quantity}</p>
-                    <p>Date: {new Date(approval.createdAt).toLocaleDateString()}</p>
-                    <div style={{ marginTop: '10px' }}>
-                      <button onClick={() => handleApprove(approval._id)} style={{ marginRight: '12px' }}>Approve</button>
-                      <button onClick={() => handleReject(approval._id)}>Reject</button>
+                  <div
+                    key={idx}
+                    style={{
+                      marginBottom: '18px',
+                      background: '#1172B626', // Updated box color
+                      padding: '28px',
+                      borderRadius: '16px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                      minWidth: '340px',
+                      maxWidth: '700px',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      textAlign: 'left',
+                      fontFamily: 'Poppins'
+                    }}
+                  >
+                    <h3 style={{ color: '#073250', fontSize: '20px', marginBottom: '8px' }}>
+                      Product Name: {approval.name}
+                    </h3>
+                    <p style={{ fontWeight: 600, color: '#1172B6', fontSize: '16px' }}>
+                      Status: {approval.status}
+                    </p>
+                    <p style={{ fontSize: '15px' }}>Quantity: {approval.quantity}</p>
+                    <p style={{ fontSize: '15px' }}>Date: {new Date(approval.createdAt).toLocaleDateString()}</p>
+                    <div style={{ marginTop: '14px' }}>
+                      <button
+                        onClick={() => handleApprove(approval._id)}
+                        style={{
+                          marginRight: '14px',
+                          padding: '8px 20px',
+                          background: '#34A853',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '7px',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(approval._id)}
+                        style={{
+                          padding: '8px 20px',
+                          background: '#EA4335',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '7px',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Reject
+                      </button>
                     </div>
                   </div>
                 ))

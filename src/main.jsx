@@ -1,3 +1,7 @@
+import '@fontsource/poppins/400.css'; // Regular
+import '@fontsource/poppins/600.css'; // Semi-bold
+import '@fontsource/poppins/700.css'; // Bold
+import '@fontsource/poppins/800.css'; // extraBold
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'

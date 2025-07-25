@@ -1,3 +1,19 @@
+// Utility to extract 'level' from JWT token in localStorage
+function getLevelFromToken() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    const payload = JSON.parse(jsonPayload);
+    return payload.level || null;
+  } catch (e) {
+    return null;
+  }
+}
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -183,11 +199,17 @@ function animateIcon(e) {
   }, 300);
 }
 
+
 const Approval = () => {
-  
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userLevel, setUserLevel] = useState(null);
+
+  useEffect(() => {
+    setUserLevel(getLevelFromToken());
+  }, []);
+
 
   useEffect(() => {
     async function fetchApprovals() {
@@ -195,7 +217,7 @@ const Approval = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://10.10.0.218:5000/approval', {
+        const res = await fetch('http://localhost:5000/approval', {
           method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         });
@@ -252,7 +274,7 @@ const Approval = () => {
           // Only send status update for approve/reject
           const statusValue = action === 'approve' ? 'approved' : 'rejected';
           try {
-            const orderRes = await fetch(`http://10.10.0.218:5000/approval`, {
+            const orderRes = await fetch(`http://localhost:5000/approval`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -412,7 +434,7 @@ const Approval = () => {
                         <li key={i} style={{ fontWeight: 400, fontSize: '15px', color: '#222' }}>
                           {item.name ? `Name: ${item.name}` : ''}
                           {item.quantity ? `, Qty: ${item.quantity}` : ''}
-                          {item.productId ? `, ProductId: ${item.productId}` : ''}
+                          
                         </li>
                       ) : (
                         <li key={i} style={{ fontWeight: 400, fontSize: '15px', color: '#222' }}>{item}</li>
@@ -424,43 +446,45 @@ const Approval = () => {
                   <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '2px', color: '#222' }}>Remarks:</div>
                   <div style={{ fontWeight: 400, fontSize: '15px', marginBottom: '8px', color: '#222' }}>{approvalData.remarks || 'xxxxxxxx'}</div>
                 </div>
-                {/* Right column: buttons */}
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '18px', alignItems: 'center', justifyContent: 'flex-end', minWidth: '320px' }}>
-                  <button
-                    style={{
-                      width: '120px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: 'linear-gradient(90deg, #007AFF 0%, #0056B3 100%)',
-                      color: '#fff',
-                      fontWeight: 600,
-                      fontSize: '17px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      opacity: 1,
-                    }}
-                    onClick={() => handleAction(approvalData.id, 'approve')}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    style={{
-                      width: '120px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: '#fff',
-                      color: '#222',
-                      fontWeight: 600,
-                      fontSize: '17px',
-                      border: '2px solid #e3ecf3',
-                      cursor: 'pointer',
-                      opacity: 1,
-                    }}
-                    onClick={() => handleAction(approvalData.id, 'reject')}
-                  >
-                    Reject
-                  </button>
-                </div>
+                {/* Right column: buttons, visible only for level 1 and only if not already approved/rejected */}
+                {userLevel === 'level1' && approvalData.status !== 'approved' && approvalData.status !== 'rejected' && (
+                  <div style={{ display: 'flex', flexDirection: 'row', gap: '18px', alignItems: 'center', justifyContent: 'flex-end', minWidth: '320px' }}>
+                    <button
+                      style={{
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: 'linear-gradient(90deg, #007AFF 0%, #0056B3 100%)',
+                        color: '#fff',
+                        fontWeight: 600,
+                        fontSize: '17px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        opacity: 1,
+                      }}
+                      onClick={() => handleAction(approvalData.id, 'approve')}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      style={{
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: '#fff',
+                        color: '#222',
+                        fontWeight: 600,
+                        fontSize: '17px',
+                        border: '2px solid #e3ecf3',
+                        cursor: 'pointer',
+                        opacity: 1,
+                      }}
+                      onClick={() => handleAction(approvalData.id, 'reject')}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
                 {/* ...existing code for remarks and buttons... */}
               </div>
             ))

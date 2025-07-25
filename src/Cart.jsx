@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { jwtDecode } from 'jwt-decode';
 import logo from './assets/image 3.png';
 import vectorIcon from './assets/Vector.png';
 import profileIcon from './assets/My Profile Icon.png';
@@ -104,27 +105,34 @@ const ViewCartButton = () => (
 
 const ProfileSection = () => (
   <>
-    <button style={{
-      width: '30px',
-      height: '30px',
+    <a href="/profile" style={{
       position: 'absolute',
       top: '57px',
       left: '1285px',
-      border: 'none',
-      background: 'transparent',
-      cursor: 'pointer',
-      padding: 0,
+      display: 'inline-block',
+      width: '30px',
+      height: '30px',
+      zIndex: 101,
     }}>
-      <img src={profileIcon} alt="Profile" style={{
+      <button style={{
         width: '30px',
         height: '30px',
-        borderRadius: '50%'
-      }} />
-    </button>
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        padding: 0,
+      }}>
+        <img src={profileIcon} alt="Profile" style={{
+          width: '30px',
+          height: '30px',
+          borderRadius: '50%'
+        }} />
+      </button>
+    </a>
     <span style={{
       position: 'absolute',
       top: '57px',
-      left: '1325px',
+      left: '1320px',
       fontFamily: 'Poppins',
       fontWeight: 600,
       fontSize: '18px',
@@ -162,7 +170,7 @@ const Cart = () => {
       return;
     }
     try {
-      const res = await fetch('http://10.10.0.218:5000/cart', {
+      const res = await fetch('http://localhost:5000/cart', {
         method: 'POST', // or 'PUT' if your backend expects it
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +208,7 @@ const Cart = () => {
         console.warn('Missing fields in cart items:', missingFields);
         return;
       }
-      const res = await fetch('http://10.10.0.218:5000/cart', {
+      const res = await fetch('http://localhost:5000/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +330,7 @@ const Cart = () => {
     if (missingFields.length > 0) {
       alert('Some cart items are missing required fields: name, quantity, productId, or variantId. Please check your cart. See console for details.');
       return;
-    }   
+    }
     if (cartItems.length === 0) {
       alert('Cart is empty.');
       return;
@@ -343,12 +351,36 @@ const Cart = () => {
     console.log('Approval payload being sent:', payload);
     const token = localStorage.getItem('token');
     console.log('Token from localStorage:', token);
+    // Check user level from JWT token (same as button rendering)
+    let userLevel = null;
+    try {
+      const token = localStorage.getItem('token');
+      if (token && token !== 'undefined' && token !== 'null') {
+        const decoded = jwtDecode(token);
+        userLevel = decoded.level || null;
+      }
+    } catch (e) {
+      userLevel = null;
+    }
     if (!token || token === 'undefined' || token === 'null') {
       alert('No valid token found in localStorage. Please login again.');
       return;
     }
+    if (userLevel !== 'level1' && userLevel !== 'level2') {
+      alert('You do not have the required user level (level1 or level2) to send for approval.');
+      return;
+    }
     try {
-      const res = await fetch('http://10.10.0.218:5000/approval', {
+      let apiUrl = '';
+      if (userLevel === 'level2') {
+        apiUrl = 'http://localhost:5000/approval';
+      } else if (userLevel === 'level1') {
+        apiUrl = 'http://localhost:5000/order'; 
+      } else {
+        alert('Invalid user level.');
+        return;
+      }
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -361,21 +393,26 @@ const Cart = () => {
         responseJson = await res.json();
       } catch (e) {
         responseJson = null;
-        console.error('Error parsing approval backend response:', e);
+        console.error('Error parsing backend response:', e);
       }
-      console.log('Approval backend response:', responseJson);
+      console.log('Backend response:', responseJson);
       if (res.ok && responseJson && responseJson.success) {
-        alert('Cart sent for approval successfully!');
-        localStorage.setItem('submittedCart', JSON.stringify(payload));
+        if (userLevel === 2 || userLevel === '2') {
+          alert('Cart sent for approval successfully!');
+          localStorage.setItem('submittedCart', JSON.stringify(payload));
+        } else {
+          alert('Checkout successful!');
+          localStorage.setItem('checkedOutCart', JSON.stringify(payload));
+        }
       } else if (res.ok) {
-        alert('Approval request succeeded, but no success message.');
-        console.warn('Approval backend returned:', responseJson);
+        alert('Request succeeded, but no success message.');
+        console.warn('Backend returned:', responseJson);
       } else {
-        alert('Failed to send cart for approval.\n' + (responseJson ? JSON.stringify(responseJson) : 'No response'));
-        console.error('Approval backend error:', res.status, res.statusText, responseJson);
+        alert('Failed to send cart.\n' + (responseJson ? JSON.stringify(responseJson) : 'No response'));
+        console.error('Backend error:', res.status, res.statusText, responseJson);
       }
     } catch (err) {
-      alert('Error connecting to approval backend. See console for details.');
+      alert('Error connecting to backend. See console for details.');
       console.error('Fetch error:', err);
     }
   };
@@ -388,7 +425,7 @@ const Cart = () => {
       return;
     }
     try {
-      const res = await fetch('http://10.10.0.218:5000/cart', {
+      const res = await fetch('http://localhost:5000/cart', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -431,7 +468,7 @@ const Cart = () => {
       }
     } catch (e) {
       setCartItems([]);
-      setError("Error fetching cart from backend: " + e.message);
+      setError("Retry " + e.message);
     }
   };
 
@@ -446,6 +483,18 @@ const Cart = () => {
       window.removeEventListener('cart-updated', handleCartUpdated);
     };
   }, []);
+  // Determine user level for button rendering using JWT (level1/level2)
+  let userLevel = null;
+  try {
+    const token = localStorage.getItem('token');
+    if (token && token !== 'undefined' && token !== 'null') {
+      const decoded = jwtDecode(token);
+      userLevel = decoded.level || null;
+    }
+  } catch (e) {
+    userLevel = null;
+  }
+
   return (
     <div
       style={{
@@ -545,7 +594,7 @@ const Cart = () => {
             justifyContent: 'flex-start',
           }}
         >
-          Product
+          Products
         </span>
       </div>
       <div
@@ -570,7 +619,6 @@ const Cart = () => {
         {error && (
           <div style={{ color: 'red', marginBottom: '10px', fontWeight: 'bold' }}>{error}</div>
         )}
-        <button onClick={fetchCartFromBackend} style={{ marginBottom: '10px', padding: '6px 16px', borderRadius: '8px', background: '#007BFF', color: 'white', border: 'none', cursor: 'pointer' }}>Refresh Cart</button>
         {cartItems.map((item, idx) => (
           <div
             key={item.id + (item.subcategory ? item.subcategory : 'default')}
@@ -1039,23 +1087,43 @@ const Cart = () => {
             boxSizing: 'border-box',
           }}
         >
-          <button
-            style={{
-              border: 'none',
-              borderRadius: '32px',
-              background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
-              color: 'white',
-              fontFamily: 'Poppins',
-              fontWeight: 600,
-              fontSize: '18px',
-              cursor: 'pointer',
-              padding: '12px 32px',
-              boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.2)',
-              transition: 'all 0.3s ease',
-            }}
-            type="button"
-            onClick={handleCheckout}
-          >Send for Approval</button>
+          {userLevel === 'level2' ? (
+            <button
+              style={{
+                border: 'none',
+                borderRadius: '32px',
+                background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
+                color: 'white',
+                fontFamily: 'Poppins',
+                fontWeight: 600,
+                fontSize: '18px',
+                cursor: 'pointer',
+                padding: '12px 32px',
+                boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.2)',
+                transition: 'all 0.3s ease',
+              }}
+              type="button"
+              onClick={handleCheckout}
+            >Send for Approval</button>
+          ) : userLevel === 'level1' ? (
+            <button
+              style={{
+                border: 'none',
+                borderRadius: '32px',
+                background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
+                color: 'white',
+                fontFamily: 'Poppins',
+                fontWeight: 600,
+                fontSize: '18px',
+                cursor: 'pointer',
+                padding: '12px 32px',
+                boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.2)',
+                transition: 'all 0.3s ease',
+              }}
+              type="button"
+              onClick={handleCheckout}
+            >Checkout</button>
+          ) : null}
         </div>
       </div>
     </div>

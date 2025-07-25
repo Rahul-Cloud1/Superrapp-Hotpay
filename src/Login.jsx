@@ -1,6 +1,6 @@
 
 // API endpoints
-const SEND_OTP_API = 'http://10.10.0.218:5000/auth/login';
+const SEND_OTP_API = 'http://localhost:5000/auth/login';
 
 
 async function sendOTP(email) {
@@ -14,7 +14,7 @@ async function sendOTP(email) {
   return response;
 }
 // API endpoints
-const VERIFY_OTP_API = 'http://10.10.0.218:5000/auth/verify';
+const VERIFY_OTP_API = 'http://localhost:5000/auth/verify';
 
 async function verifyOTP(email, otpValue) {
   const response = await fetch(VERIFY_OTP_API, {
@@ -86,7 +86,7 @@ function Login() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: 'Poppins',
             fontWeight: 600,
             fontSize: '20px',
             lineHeight: '100%',
@@ -111,7 +111,7 @@ function Login() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: 'Poppins',
             fontWeight: 600,
             fontSize: '20px',
             lineHeight: '100%',
@@ -136,7 +136,7 @@ function Login() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: 'Poppins',
             fontWeight: 600,
             fontSize: '20px',
             lineHeight: '100%',
@@ -197,9 +197,9 @@ function Login() {
           transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
-          fontWeight: 800,
+          fontWeight: 700,
           fontStyle: 'normal',
-          fontSize: '70px',
+          fontSize: '58px',
           lineHeight: '120%',
           letterSpacing: '0%',
           color: 'rgba(255, 255, 255, 1)',
@@ -215,18 +215,18 @@ function Login() {
         </div>
         {/* Subtitle under office management */}
         <div style={{
-          width: '700px',
-          height: '40px',
+          width: '593px',
+          height: '98px',
           position: 'absolute',
-          top: '420px',
+          top: '372px',
           left: '88px',
           transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 400,
           fontStyle: 'normal',
-          fontSize: '38px',
-          lineHeight: '100%',
+          fontSize: '28px',
+          lineHeight: '140%',
           letterSpacing: '0%',
           color: 'rgba(255, 255, 255, 1)',
           display: 'flex',
@@ -241,7 +241,7 @@ function Login() {
           width: '593px',
           height: '47px',
           position: 'absolute',
-          top: '650px',
+          top: '604px',
           left: '88px',
           transform: 'rotate(0deg)',
           opacity: 1,
@@ -306,8 +306,8 @@ function Login() {
         width: '463px',
         height: '625.19px',
         position: 'absolute',
-        top: '252px',
-        left: '900px',
+        top: '218px',
+        left: '878px',
         transform: 'rotate(0deg)',
         opacity: 1,
         borderRadius: '13.59px',
@@ -319,10 +319,10 @@ function Login() {
           alt="SuperApp Logo"
           style={{
             width: '292px',
-            height: '131px',
+            height: '131.33px',
             position: 'absolute',
-            top: '34px',
-            left: '85px',
+            top: '34.43px',
+            left: '85.59px',
             transform: 'rotate(0deg)',
             opacity: 1
           }}
@@ -331,16 +331,17 @@ function Login() {
           width: '90px',
           height: '39px',
           position: 'absolute',
-          top: '177px',
-          left: '186px',
+          top: '177.93px',
+          left: '186.97px',
           transform: 'rotate(0deg)',
           opacity: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          style: 'semibold',
           fontFamily: 'Poppins',
           fontWeight: 600,
-          fontSize: '26px',
+          fontSize: '26.33px',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -351,8 +352,8 @@ function Login() {
           width: '55px',
           height: '30px',
           position: 'absolute',
-          top: '245px',
-          left: '65px',
+          top: '234.96px',
+          left: '71.77px',
           transform: 'rotate(0deg)',
           opacity: 1,
           display: 'flex',
@@ -360,7 +361,8 @@ function Login() {
           justifyContent: 'center',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontSize: '19px',
+          style:'Medium',
+          fontSize: '19.75px',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -373,16 +375,17 @@ function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           style={{
-            width: '320px',
-            height: '40px',
+            width: '306.1px',
+            height: '18.65px',
             position: 'absolute',
-            top: '270px',
-            left: '71px',
+            top: '268.97px',
+            left: '71.77px',
             border: 'none',
             outline: 'none',
             background: 'transparent',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontWeight: 400,
+            fontSize: '15.36px',
             color: '#333'
           }}
           placeholder="Enter your email"
@@ -390,10 +393,10 @@ function Login() {
         />
         {/* Line 1 */}
         <div style={{
-          width: '280.56px',
+          width: '322.56px',
           height: '0px',
           position: 'absolute',
-          top: '300.2px',
+          top: '294.2px',
           left: '70.67px',
           transform: 'rotate(0deg)',
           opacity: 1,
@@ -409,13 +412,14 @@ function Login() {
               height: '30px',
               position: 'absolute',
               top: '313px',
-              left: '65px',
+              left: '72px',
               transform: 'rotate(0deg)',
               opacity: 1,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontFamily: 'Poppins',
+              style: 'Medium',
               fontWeight: 500,
               fontSize: '19.75px',
               lineHeight: '100%',
@@ -461,17 +465,19 @@ function Login() {
                     }
                   }}
                   style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '50px',
+                    height: '50px',
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                     fontFamily: 'Poppins',
                     fontSize: '22px',
                     color: '#333',
-                    background: 'white',
+                    background: '#1172B626',
+                    backdropFilter: 'blur(5px)',
+
                     textAlign: 'center',
                   }}
-                  placeholder="-"
+                  placeholder=""
                 />
               ))}
             </div>
@@ -550,9 +556,10 @@ function Login() {
           <span style={{
             fontFamily: 'Poppins',
             fontWeight: 600,
-            fontSize: '18px',
+            fontSize: '17.55px',
             color: 'white',
-            textAlign: 'center'
+            textAlign: 'center',
+            letterSpacing: '0px'
           }}>{loading ? 'Please wait...' : showOTP ? 'Sign in' : 'Send OTP'}</span>
         </div>
         {/* Info message */}
@@ -560,7 +567,7 @@ function Login() {
           <div style={{
             color: 'green',
             position: 'absolute',
-            top: '470px',
+            top: '500px',
             left: '72px',
             fontFamily: 'Poppins',
             fontSize: '16px'
@@ -571,7 +578,7 @@ function Login() {
           <div style={{
             color: 'red',
             position: 'absolute',
-            top: '490px',
+            top: '500px',
             left: '72px',
             fontFamily: 'Poppins',
             fontSize: '16px'
@@ -593,7 +600,8 @@ function Login() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'Poppins',
-          fontWeight: 600,
+          fontWeight: 500,
+          style: 'Medium',
           fontSize: '17.55px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -606,6 +614,9 @@ function Login() {
           <Link to="/signup" style={{
             color: '#1172B6',
             textDecoration: 'underline',
+            fontWeight: 600,
+          style: 'Semibold',
+          fontSize: '17.55px',
             textDecorationStyle: 'solid',
             marginLeft: '4px'
           }}>Sign up</Link>

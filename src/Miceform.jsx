@@ -61,19 +61,24 @@ const styles = {
     padding: '0 16px',
     fontFamily: 'Poppins',
     fontSize: '16px',
+    fontStyle: 'Medium',
+    fontWeight: 500,
     background: 'transparent',
+    color: '#00000040',
   },
   searchButton: {
-    width: '50px',
-    height: '100%',
+    width: '60px',
+    height: '50px',
     border: 'none',
+    left: '664px',
+    position: 'absolute',
     background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    borderTopRightRadius: '9px',
-    borderBottomRightRadius: '9px',
+    borderTopRightRadius: '15px',
+    borderBottomRightRadius: '15px',
   },
   blueButton: {
     border: 'none',
@@ -112,6 +117,10 @@ const ViewCartButton = () => (
     width: '152px',
     height: '50px',
     position: 'absolute',
+    fontSize: '16px',
+    fontWeight: 600,
+    fontStyle: 'Semibold',
+    fontFamily: 'Poppins',
     top: '46px',
     left: '1062px',
   }}>
@@ -145,6 +154,8 @@ const ProfileSection = () => (
         left: '1320px',
         fontFamily: 'Poppins',
         fontSize: '16px',
+        fontWeight: 400,
+        fontStyle: 'Regular',
         color: 'black',
       }}>
         My Profile
@@ -247,7 +258,7 @@ const Miceform = () => {
       if (mgPax) payload.mgPax = Number(mgPax);
     }
     try {
-      await fetch('http://10.10.0.218:5000/quote', {
+      await fetch('http://localhost:5000/quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

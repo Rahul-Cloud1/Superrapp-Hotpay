@@ -1,6 +1,6 @@
 
 // API endpoint
-const LOGIN_API = 'http://10.10.0.218:5000/auth/login/vendor';
+const LOGIN_API = 'http://localhost:5000/auth/login/vendor';
 
 async function loginVendor(email, password) {
   const response = await fetch(LOGIN_API, {
@@ -70,10 +70,11 @@ function vendorlogin() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
-            fontWeight: 600,
+            fontFamily: 'poppins',
+            fontWeight: 700,
             fontSize: '20px',
             lineHeight: '100%',
+            style: 'Bold',
             letterSpacing: '0%',
             textAlign: 'center',
             background: 'white',
@@ -95,9 +96,10 @@ function vendorlogin() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: 'Poppins',
             fontWeight: 600,
-            fontSize: '20px',
+            fontSize: '26px',
+            fontStyle: 'Semibold',
             lineHeight: '100%',
             letterSpacing: '0%',
             textAlign: 'center',
@@ -120,9 +122,10 @@ function vendorlogin() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            fontFamily: 'Poppins, sans-serif',
-            fontWeight: 600,
-            fontSize: '20px',
+            fontFamily: 'Poppins',
+            fontWeight: 700,
+            fontSize: '22px',
+            fontStyle: 'Bold',
             lineHeight: '100%',
             letterSpacing: '0%',
             textAlign: 'center',
@@ -159,7 +162,7 @@ function vendorlogin() {
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 600,
-          fontStyle: 'normal',
+          style: 'Semibold',  
           fontSize: '38px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -173,17 +176,17 @@ function vendorlogin() {
         </div>
         {/* Manage orders, inventory, and earnings */}
         <div style={{
-          width: '596px',
-          height: '136px',
+          width: '678px',
+          height: '130px',
           position: 'absolute',
-          top: '207px',
+          top: '196px',
           left: '88px',
           transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
-          fontWeight: 600,
-          fontStyle: 'normal',
-          fontSize: '50px',
+          fontWeight: 700,
+          style: 'Bold',
+          fontSize: '54px',
           lineHeight: '120%',
           letterSpacing: '0%',
           color: 'rgba(255, 255, 255, 1)',
@@ -199,19 +202,18 @@ function vendorlogin() {
         </div>
         {/* Subtitle under */}
         <div style={{
-          width: '700px',
-          height: '40px',
+          width: '525px',
+          height: '98px',
           position: 'absolute',
-          top: '420px',
+          top: '362px',
           left: '88px',
-          transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 400,
-          fontStyle: 'normal',
-          fontSize: '38px',
-          lineHeight: '100%',
-          letterSpacing: '0%',
+          style: 'Regular',
+          fontSize: '26px',
+          lineHeight: '140%',
+          letterSpacing: '0',
           color: 'rgba(255, 255, 255, 1)',
           display: 'flex',
           alignItems: 'center',
@@ -225,13 +227,13 @@ function vendorlogin() {
           width: '593px',
           height: '47px',
           position: 'absolute',
-          top: '650px',
+          top: '604px',
           left: '88px',
           transform: 'rotate(0deg)',
           opacity: 1,
           fontFamily: 'Poppins',
           fontWeight: 600,
-          fontStyle: 'normal',
+          style: 'Semibold',
           fontSize: '32px',
           lineHeight: '100%',
           letterSpacing: '0%',
@@ -302,11 +304,11 @@ function vendorlogin() {
           src={logo} 
           alt="SuperApp Logo"
           style={{
-            width: '292px',
-            height: '131px',
+            width: '292.71px',
+            height: '131.33px',
             position: 'absolute',
-            top: '34px',
-            left: '85px',
+            top: '34.43px',
+            left: '85.59px',
             transform: 'rotate(0deg)',
             opacity: 1
           }}
@@ -315,16 +317,17 @@ function vendorlogin() {
           width: '90px',
           height: '39px',
           position: 'absolute',
-          top: '177px',
-          left: '186px',
+          top: '177.93px',
+          left: '186.97px',
           transform: 'rotate(0deg)',
           opacity: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'Poppins',
+          style: 'Semibold',
           fontWeight: 600,
-          fontSize: '26px',
+          fontSize: '26.33px',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -335,8 +338,8 @@ function vendorlogin() {
           width: '55px',
           height: '30px',
           position: 'absolute',
-          top: '245px',
-          left: '65px',
+          top: '245.96px',
+          left: '71.77px',
           transform: 'rotate(0deg)',
           opacity: 1,
           display: 'flex',
@@ -344,7 +347,8 @@ function vendorlogin() {
           justifyContent: 'center',
           fontFamily: 'Poppins',
           fontWeight: 500,
-          fontSize: '19px',
+          fontStyle: 'Medium',
+          fontSize: '19.75px',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -366,7 +370,8 @@ function vendorlogin() {
             outline: 'none',
             background: 'transparent',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontWeight: 400,
+            fontSize: '15.36px',
             color: '#333'
           }}
           placeholder="Enter your email"
@@ -387,11 +392,11 @@ function vendorlogin() {
 
         {/* Password Input Field */}
         <div style={{
-          width: '90px',
+          width: '97px',
           height: '30px',
           position: 'absolute',
-          top: '313px',
-          left: '65px',
+          top: '323.85px',
+          left: '70.67px',
           transform: 'rotate(0deg)',
           opacity: 1,
           display: 'flex',
@@ -400,6 +405,7 @@ function vendorlogin() {
           fontFamily: 'Poppins',
           fontWeight: 500,
           fontSize: '19px',
+          fontStyle: 'Medium',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -419,7 +425,8 @@ function vendorlogin() {
             outline: 'none',
             background: 'transparent',
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '15.36px',
+            fontWeight: 400,
             color: '#333'
           }}
           placeholder="Enter your password"
@@ -471,8 +478,8 @@ function vendorlogin() {
             width: '321.73px',
             height: '49.37px',
             position: 'absolute',
-            top: '428px',
-            left: '72px',
+            top: '426.98px',
+            left: '70.67px',
             transform: 'rotate(0deg)',
             opacity: loading ? 0.7 : 1,
             borderRadius: '10.97px',
@@ -488,7 +495,7 @@ function vendorlogin() {
           <span style={{
             fontFamily: 'Poppins',
             fontWeight: 600,
-            fontSize: '18px',
+            fontSize: '17.55px',
             color: 'white',
             textAlign: 'center'
           }}>{loading ? 'Please wait...' : 'Sign in'}</span>
@@ -533,6 +540,7 @@ function vendorlogin() {
           fontFamily: 'Poppins',
           fontWeight: 600,
           fontSize: '17.55px',
+          fontStyle: 'Medium',
           lineHeight: '100%',
           letterSpacing: '0%',
           textAlign: 'center',
@@ -545,7 +553,14 @@ function vendorlogin() {
             color: '#1172B6',
             textDecoration: 'underline',
             textDecorationStyle: 'solid',
-            marginLeft: '4px'
+            marginLeft: '4px',
+            
+            fontWeight: 600,
+            fontSize: '17.55px',
+            fontStyle: 'Semibold',
+            lineHeight: '100%',
+            letterSpacing: '0%',
+            textAlign: 'center'
           }}>Register</Link>
         </div>
       </div>

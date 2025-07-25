@@ -4,6 +4,9 @@ import './App.css'
 
 // Asset Imports
 import logo from './assets/image 3.png'
+import newimage1 from './assets/Bannerimage1.png'
+import newimage2 from './assets/Bannerimage2.png'
+import newimage3 from './assets/Bannerimage3.png'
 import { Link } from 'react-router-dom';
 import stationeryImage from './assets/Frame 3.png'
 import eventImage from './assets/Rectangle 7.png'
@@ -42,10 +45,7 @@ import discoverImage from './assets/Discover.png'
 import tilephotoImage from './assets/tilephoto.jpg'
 import img23Image from './assets/img23.png'
 
-/**
- * SuperApp - Clean E-commerce Interface
- * Professional layout with product tiles and service components
- */
+
 function App() {
 
   // Hide scrollbars and set up container
@@ -67,8 +67,23 @@ function App() {
     }
   }, [])
 
-  // Component styles
-  const styles = {
+  // Carousel Banner image
+  const styles = {    
+    bannersection: {
+      width: '1322px',
+      height: '300px',
+      position: 'absolute',
+      top: '118px',
+      left: '60px',
+      borderRadius: '10px',
+      borderWidth: '1.18px',
+      borderStyle: 'solid',
+      borderColor: 'rgba(0, 0, 0, 0.15)',
+      opacity: 1,
+      transform: 'rotate(0deg)',
+      background: '#fff',
+      boxSizing: 'border-box',
+    },
     container: {
       width: '100vw',
       minHeight: '100vh',
@@ -81,7 +96,7 @@ function App() {
     },
     header: {
       width: '100%',
-      height: '120px',
+      height: '96px',
       background: 'rgba(255, 255, 255, 0.35)',
       boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.35)',
       position: 'relative',
@@ -92,14 +107,14 @@ function App() {
       width: '193.92px',
       height: '87px',
       position: 'absolute',
-      top: '21px',
+      top: '6px',
       left: '41px',
     },
     searchContainer: {
       width: '721px',
       height: '50px',
       position: 'absolute',
-      top: '46px',
+      top: '30px',
       left: '269px',
       display: 'flex',
       border: '1px solid rgba(17, 114, 182, 0.25)',
@@ -115,6 +130,12 @@ function App() {
       outline: 'none',
       padding: '0 16px',
       fontFamily: 'Poppins',
+        
+        style: 'Regular',
+      style: 'Medium',
+      fontWeight: 500,
+      color: '#00000040',
+
       fontSize: '16px',
       background: 'transparent',
     },
@@ -135,42 +156,19 @@ function App() {
       borderRadius: '20px',
       background: 'linear-gradient(135deg, #007BFF 0%, #0056B3 100%)',
       color: 'white',
-      fontFamily: 'Poppins',
+      fontFamily: 'Poppins',        
+        style: 'Regular',
       fontWeight: 600,
       fontSize: '18px',
       cursor: 'pointer',
       boxShadow: '0px 4px 8px rgba(0, 123, 255, 0.3)',
       transition: 'all 0.3s ease',
     },
-    contentCard: {
-      width: '426px',
-      height: '213px',
-      position: 'absolute',
-      top: '167px',
-      borderRadius: '11.83px',
-      border: '1.18px solid rgba(17, 114, 182, 0.15)',
-      background: 'rgba(255, 255, 255, 1)',
-      boxShadow: '0px 4.73px 4.73px 0px rgba(17, 114, 182, 0.15)',
-      opacity: 1,
-      boxSizing: 'border-box',
-    },
-    contentCard3: {
-      width: '426px',
-      height: '213px',
-      position: 'absolute',
-      top: '167px',
-      borderRadius: '11.83px',
-      border: '1.18px solid rgba(17, 114, 182, 0.15)',
-      background: 'rgba(192, 186, 78, 0.25)',
-      boxShadow: '0px 4.73px 4.73px 0px rgba(17, 114, 182, 0.15)',
-      opacity: 1,
-      boxSizing: 'border-box',
-    },
-    bannerSection: {
+miceSection: {
       width: '1316px',
       height: '117px',
       position: 'absolute',
-      top: '418px',
+      top: '434px',
       left: '63px',
       borderRadius: '11.83px',
       background: 'rgba(17, 114, 182, 0.15)',
@@ -178,207 +176,19 @@ function App() {
       boxShadow: '0px 4.73px 4.73px 0px rgba(17, 114, 182, 0.15)',
       boxSizing: 'border-box',
     },
-    smallElement: {
-      width: '87.56666564941406px',
-      height: '27.21666717529297px',
-      position: 'absolute',
-      top: '28.4px',
-      left: '310.03px',
-      borderRadius: '5.92px',
-      opacity: 1,
-      background: 'rgba(0, 0, 0, 1)',
-      color: 'white',
-      border: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'Poppins',
-      fontSize: '12px',
-      fontWeight: 500,
-      cursor: 'pointer',
-      boxSizing: 'border-box',
-    },
-    bookNowButton: {
-      width: '87.56666564941406px',
-      height: '27.21666717529297px',
-      position: 'absolute',
-      top: '131.35px',
-      left: '195.25px',
-      borderRadius: '5.92px',
-      opacity: 1,
-      background: 'rgba(0, 0, 0, 1)',
-      color: 'white',
-      border: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'Poppins',
-      fontSize: '12px',
-      fontWeight: 500,
-      cursor: 'pointer',
-      boxSizing: 'border-box',
-    },
-    card2Heading: {
-      width: '207.0833282470703px',
-      height: '46.150001525878906px',
-      position: 'absolute',
-      top: '29.58px',
-      left: '191.7px',
-      fontFamily: 'Poppins',
-      fontWeight: 600,
-      fontSize: '18.93px',
-      lineHeight: '23.67px',
-      letterSpacing: '0%',
-      verticalAlign: 'middle',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      display: 'block',
-      boxSizing: 'border-box',
-    },
-    card2Subtext: {
-      width: '188.14999389648438px',
-      height: '21.299999237060547px',
-      position: 'absolute',
-      top: '85.2px',
-      left: '195.25px',
-      fontFamily: 'Poppins',
-      fontWeight: 400,
-      fontSize: '13.02px',
-      lineHeight: '150%',
-      letterSpacing: '0%',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      display: 'block',
-      boxSizing: 'border-box',
-    },
-    cardHeading: {
-      width: '233.11666870117188px',
-      height: '46.150001525878906px',
-      position: 'absolute',
-      top: '14.2px',
-      left: '21.3px',
-      fontFamily: 'Poppins',
-      fontWeight: 600,
-      fontSize: '18.93px',
-      lineHeight: '23.67px',
-      letterSpacing: '0%',
-      verticalAlign: 'middle',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      display: 'block',
-      boxSizing: 'border-box',
-    },
-    cardSubtext: {
-      width: '188.14999389648438px',
-      height: '21.299999237060547px',
-      position: 'absolute',
-      top: '71px',
-      left: '21.3px',
-      fontFamily: 'Poppins',
-      fontWeight: 400,
-      fontSize: '13.02px',
-      lineHeight: '150%',
-      letterSpacing: '0%',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      display: 'block',
-      boxSizing: 'border-box',
-    },
-    card3Heading: {
-      width: '194.06666564941406px',
-      height: '46.150001525878906px',
-      position: 'absolute',
-      top: '29.58px',
-      left: '208.27px',
-      fontFamily: 'Poppins',
-      fontWeight: 600,
-      fontSize: '18px',
-      lineHeight: '24px',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      boxSizing: 'border-box',
-    },
-    card3Subtext: {
-      width: '188.14999389648438px',
-      height: '21.299999237060547px',
-      position: 'absolute',
-      top: '85.2px',
-      left: '208.27px',
-      fontFamily: 'Poppins',
-      fontWeight: 400,
-      fontSize: '13px',
-      lineHeight: '150%',
-      color: 'rgba(0, 0, 0, 1)',
-      opacity: 1,
-      margin: 0,
-      padding: 0,
-      boxSizing: 'border-box',
-    },
-    card3Button: {
-      width: '128.98333740234375px',
-      height: '27.21666717529297px',
-      position: 'absolute',
-      top: '142px',
-      left: '208.27px',
-      borderRadius: '5.92px',
-      opacity: 1,
-      background: 'rgba(0, 0, 0, 1)',
-      color: 'white',
-      border: 'none',
-      fontFamily: 'Poppins',
-      fontSize: '12px',
-      fontWeight: 500,
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxSizing: 'border-box',
-    },
-    getQuoteButton: {
-      width: '140px',
-      height: '32px',
-      position: 'absolute',
-      top: '58px',
-      left: '1076px',
-      border: 'none',
-      borderRadius: '16px',
-      background: 'rgba(0, 0, 0, 1)',
-      color: 'white',
-      fontFamily: 'Poppins',
-      fontSize: '14px',
-      fontWeight: 400,
-      fontStyle: 'normal',
-      lineHeight: '150%',
-      letterSpacing: '0%',
-      textAlign: 'center',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      opacity: 1,
-      boxShadow: 'none',
-      transition: 'all 0.3s ease',
-    },
     productsLink: {
       width: '141px',
       height: '34px',
       position: 'absolute',
       top: '565px',
-      left: '65px',
+      left: '40px',
       fontFamily: 'Poppins',
+        
+        style: 'Regular',
       fontSize: '24px',
+      style: 'Semibold',
       fontWeight: 600,
-      fontStyle: 'normal',
+      fontStyle: 'Regular',
       lineHeight: '150%',
       letterSpacing: '0%',
       color: 'black',
@@ -399,9 +209,12 @@ function App() {
       top: '1003px',
       left: '61px',
       fontFamily: 'Poppins',
+        
+        style: 'Regular',
       fontSize: '24px',
+      style: 'Semibold',
       fontWeight: 600,
-      fontStyle: 'normal',
+      fontStyle: 'Regular',
       lineHeight: '150%',
       letterSpacing: '0%',
       color: 'black',
@@ -416,27 +229,6 @@ function App() {
       background: 'transparent',
       verticalAlign: 'middle',
       borderRadius: '0px',
-    },
-    productsCard: {
-      width: '110px',
-      height: '157px',
-      position: 'absolute',
-      top: '619px',
-      left: '61px',
-      opacity: 1,
-      angle: '0deg',
-      cursor: 'pointer',
-      border: '1px solid rgba(17, 114, 182, 0.15)',
-      borderRadius: '8px',
-      background: 'rgba(255, 255, 255, 1)',
-      boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0ms ease',
-      animationDuration: '0ms',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
     },
     p1: {
       width: '110px',
@@ -915,42 +707,6 @@ function App() {
       alignItems: 'center',
       justifyContent: 'flex-start',
     },
-    newContainer: {
-      width: 'calc(100vw - 120px)',
-      height: '350px',
-      position: 'absolute',
-      top: '80vh',
-      left: '60px',
-      right: '60px',
-      opacity: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      background: 'transparent',
-      borderRadius: '8px',
-      gap: '15px',
-      overflowX: 'auto',
-      overflowY: 'hidden',
-      scrollBehavior: 'smooth',
-      WebkitOverflowScrolling: 'touch',
-    },
-    contentTile: {
-      width: '230px',
-      height: '350.49884033203125px',
-      opacity: 1,
-      angle: '0deg',
-      border: '1px solid rgba(17, 114, 182, 0.15)',
-      borderRadius: '8px',
-      background: 'rgba(255, 255, 255, 1)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      padding: '16px',
-      boxSizing: 'border-box',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-    },
   }
 
   // Reusable Components
@@ -977,7 +733,7 @@ function App() {
       width: '152px',
       height: '50px',
       position: 'absolute',
-      top: '46px',
+      top: '30px',
       left: '1062px',
     }}>
       View Cart
@@ -991,7 +747,7 @@ function App() {
           width: '30px',
           height: '30px',
           position: 'absolute',
-          top: '57px',
+          top: '48px',
           left: '1285px',
           border: 'none',
           background: 'transparent',
@@ -1006,9 +762,11 @@ function App() {
         </button>
         <span style={{
           position: 'absolute',
-          top: '62px',
+          top: '53px',
           left: '1320px',
           fontFamily: 'Poppins',
+        
+        style: 'Regular',
           fontSize: '16px',
           color: 'black',
         }}>
@@ -1018,68 +776,36 @@ function App() {
     </>
   )
 
+  const carouselImages = [newimage1];
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  useEffect(() => {
+    if (carouselImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentBanner((prev) => (prev + 1) % carouselImages.length);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [carouselImages.length]);
+
   const ContentCard = ({ leftPosition, showOrderButton = false, showBookNowButton = false, showHeading = false, showCard2Heading = false, showCard3Heading = false, showSubtext = false, showCard2Subtext = false, showCard3Subtext = false, showCard3Button = false, hasStationeryBackground = false, hasEventBackground = false, isCard3 = false }) => (
     <div style={{
-      ...(isCard3 ? styles.contentCard3 : styles.contentCard),
+      ...(isCard3 ? styles.contentCard3 : styles.bannersection),
       left: leftPosition,
       backgroundImage: hasStationeryBackground ? `url(${stationeryImage})` : hasEventBackground ? `url(${eventImage})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
-      {showHeading && (
-        <h2 style={styles.cardHeading}>
-          Get the best prices on<br />your office stationery
-        </h2>
-      )}
-      {showCard2Heading && (
-        <h2 style={styles.card2Heading}>
-          Deep clean with<br />foam-jet AC service
-        </h2>
-      )}
-      {showSubtext && (
-        <p style={styles.cardSubtext}>
-          Check the deals now.
-        </p>
-      )}
-      {showCard2Subtext && (
-        <p style={styles.card2Subtext}>
-          AC service & repair
-        </p>
-      )}
-      {showOrderButton && (
-        <button style={styles.smallElement} onClick={() => console.log('Order now clicked')}>
-          Order now
-        </button>
-      )}
-      {showBookNowButton && (
-        <button style={styles.bookNowButton} onClick={() => console.log('Book now clicked')}>
-          Book Now
-        </button>
-      )}
-      {showCard3Heading && (
-        <h2 style={styles.card3Heading}>
-          Book your event<br />with us now
-        </h2>
-      )}
-      {showCard3Subtext && (
-        <p style={styles.card3Subtext}>
-          20% off on your first booking.
-        </p>
-      )}
-      {showCard3Button && (
-        <a href="/miceform" style={{ textDecoration: 'none' }}>
-          <button style={styles.card3Button}>
-            Get a quote now
-          </button>
-        </a>
-      )}
-      {/* Card content goes here */}
+      <img src={carouselImages[currentBanner]} alt="Banner" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px', transition: 'opacity 0.5s' }} />
     </div>
   )
 
-  const BannerSection = () => (
-    <div style={styles.bannerSection}>
+  const MiceSection = () => (
+    <div style={styles.miceSection}>
       {/* Background image */}
       <div style={{
         position: 'absolute',
@@ -1097,14 +823,18 @@ function App() {
       {/* Main heading */}
       <h2 style={{
         position: 'absolute',
+        width: '199px',
+        height: '30px', 
         top: '15px',
-        left: '213px',
-        fontFamily: 'Poppins',
-        fontSize: '24px',
-        fontWeight: 600,
-        color: 'black',
-        margin: 0,
-        lineHeight: '1.2',
+        left: '212px',
+        fontFamily: 'Poppins',        
+        style: 'Medium',        
+        fontSize: '20px',
+        fontWeight: 500,
+        lineHeight: '150%',
+        letterSpacing: '0%',
+        color: 'rgba(0, 0, 0, 1)',
+        margin: 0,        
       }}>
         Plan. Book. Impress.
       </h2>
@@ -1112,11 +842,13 @@ function App() {
       {/* First description line */}
       <p style={{
         position: 'absolute',
-        top: '45px',
+        top: '48px',
         left: '213px',
-        fontFamily: 'Poppins',
-        fontSize: '14px',
+        fontFamily: 'Poppins',        
+        style: 'Regular',
+        fontSize: '15px',
         fontWeight: 400,
+        lineHeight:'150%',
         color: 'black',
         margin: 0,
         lineHeight: '1.4',
@@ -1127,9 +859,10 @@ function App() {
       {/* Second description line */}
       <p style={{
         position: 'absolute',
-        top: '65px',
-        left: '213px',
-        fontFamily: 'Poppins',
+        top: '77px',
+        left: '212px',
+        fontFamily: 'Poppins',        
+        style: 'Regular',
         fontSize: '14px',
         fontWeight: 400,
         color: 'black',
@@ -1144,16 +877,17 @@ function App() {
         position: 'absolute',
         top: '47px',
         right: '50px',
-        width: '170px',
-        height: '40px',
+        width: '208.52px',
+        height: '44px',
         border: 'none',
-        borderRadius: '20px',
+        borderRadius: '9.57px',
         background: 'rgba(0, 0, 0, 1)',
         color: 'white',
-        fontFamily: 'Poppins',
-        fontSize: '14px',
+        fontFamily: 'Poppins',        
+        style: 'Regular',
+        fontSize: '18.62px',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         lineHeight: '150%',
         letterSpacing: '0%',
         textAlign: 'center',
@@ -1221,8 +955,11 @@ function App() {
       {/* Product title */}
       <p style={{
         fontFamily: 'Poppins',
-        fontSize: '12px',
-        fontWeight: 500,
+        
+        style: 'Regular',
+        fontSize: '14px',
+        fontWeight: 400,
+        style: 'Regular',
         color: 'black',
         textAlign: 'center',
         margin: 0,
@@ -1260,8 +997,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1304,8 +1043,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1348,8 +1089,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1392,8 +1135,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1436,8 +1181,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1480,8 +1227,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1524,8 +1273,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1568,8 +1319,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1612,8 +1365,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1656,8 +1411,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1700,8 +1457,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1744,8 +1503,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1788,8 +1549,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1832,8 +1595,10 @@ function App() {
         angle: '0deg',
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -1875,6 +1640,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -1913,6 +1680,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -1951,6 +1720,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -1987,7 +1758,8 @@ function App() {
         left: '0px',
         opacity: 1,
         color: 'black',
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins',        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2025,6 +1797,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2062,6 +1836,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2099,6 +1875,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2136,6 +1914,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2173,6 +1953,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2210,8 +1992,10 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
-        fontStyle: 'normal',
+        fontStyle: 'Regular',
         fontSize: '14px',
         lineHeight: '16px',
         letterSpacing: '0%',
@@ -2250,6 +2034,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2287,6 +2073,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2324,6 +2112,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2361,6 +2151,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2398,6 +2190,8 @@ function App() {
         opacity: 1,
         color: 'black',
         fontFamily: 'Poppins',
+        
+        style: 'Regular',
         fontWeight: 400,
         fontSize: '14px',
         lineHeight: '16px',
@@ -2531,8 +2325,10 @@ function App() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'Poppins',
+        
+        style: 'Regular',
           fontWeight: 600,
-          fontStyle: 'normal',
+          fontStyle: 'Regular',
           fontSize: '20px',
           lineHeight: '140%',
           letterSpacing: '0%',
@@ -2577,10 +2373,8 @@ function App() {
       
       {/* Main content - 3 ContentCard boxes at specified positions */}
       <ContentCard leftPosition="61px" showOrderButton={true} showHeading={true} showSubtext={true} hasStationeryBackground={false} />
-      <ContentCard leftPosition="507px" showBookNowButton={true} showCard2Heading={true} showCard2Subtext={true} />
-      <ContentCard leftPosition="953px" isCard3={true} showCard3Heading={true} showCard3Subtext={true} showCard3Button={true} />
       
-      <BannerSection />
+      <MiceSection />
       <ProductsLink />
       <P1 />
       <P2 />
@@ -2667,6 +2461,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -2710,6 +2506,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -2739,6 +2537,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
@@ -2796,6 +2596,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -2839,6 +2641,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -2868,6 +2672,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
@@ -2925,6 +2731,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -2968,6 +2776,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -2997,6 +2807,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
@@ -3054,6 +2866,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -3097,6 +2911,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -3126,6 +2942,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
@@ -3183,6 +3001,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -3226,6 +3046,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -3257,6 +3079,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
@@ -3313,6 +3137,8 @@ function App() {
             top: '200px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 700,
             fontStyle: 'Bold',
             fontSize: '16px',
@@ -3356,6 +3182,8 @@ function App() {
             top: '273px',
             left: '16px',
             fontFamily: 'Poppins',
+        
+        style: 'Regular',
             fontWeight: 500,
             fontStyle: 'Medium',
             fontSize: '14px',
@@ -3387,6 +3215,8 @@ function App() {
               transform: 'rotate(0deg)',
               opacity: 1,
               fontFamily: 'Poppins',
+        
+        style: 'Regular',
               fontWeight: 600,
               fontStyle: 'SemiBold',
               fontSize: '20px',
